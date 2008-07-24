@@ -61,25 +61,49 @@ class MyClient < Jabber::Simple
     setup_callback
   end
 
+  def process_feeder_message(message)
+    entry = message.first_element('entry')
+    message = HTMLEntities.new.decode(entry.first_element_text('summary'))
+    id = entry.first_element_text('id')
+
+    author = entry.first_element('source').first_element('author').first_element_text('name')
+    authorlink = entry.first_element('source').first_element_text('link')
+
+    # Strip off the author's name from the message
+    message.gsub!(Regexp.new("^#{author}: "), '')
+
+    puts "msg from #{author}: #{message}"
+    @beanstalk.yput({:author => author,
+      :authorlink => authorlink,
+      :message => message,
+      :id => id
+      })
+  rescue StandardError, Interrupt
+    puts "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t")
+    $stdout.flush
+  end
+
+  def process_user_message(msg)
+    return if msg.body.nil?
+    puts "user message from #{msg.from.to_s}: #{msg.body}"
+    $stdout.flush
+  rescue StandardError, Interrupt
+    puts "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
+    $stdout.flush
+  end
+
+  def from_a_feeder?(message)
+    LaconicaBot::Config::FEEDERS.include? message.from.bare.to_s
+  end
+
   def setup_callback
     client.add_message_callback do |message|
       begin
-        entry = message.first_element('entry')
-        message = HTMLEntities.new.decode(entry.first_element_text('summary'))
-        id = entry.first_element_text('id')
-
-        author = entry.first_element('source').first_element('author').first_element_text('name')
-        authorlink = entry.first_element('source').first_element_text('link')
-
-        # Strip off the author's name from the message
-        message.gsub!(Regexp.new("^#{author}: "), '')
-
-        puts "msg from #{author}: #{message}"
-        @beanstalk.yput({:author => author,
-          :authorlink => authorlink,
-          :message => message,
-          :id => id
-          })
+        if from_a_feeder? message
+          process_feeder_message message
+        else
+          process_user_message message
+        end
       rescue StandardError, Interrupt
         puts "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
         $stdout.flush
@@ -104,7 +128,6 @@ loop do
   server = MyClient.new(
     LaconicaBot::Config::CONF['incoming']['jid'],
     LaconicaBot::Config::CONF['incoming']['pass'])
-  accept_subscriptions=false
   server.status nil, 'Watching for messages...'
 
   puts "Set up with #{server.inspect}"

@@ -3,3 +3,6 @@ incoming:
   pass: yourb0tp455
   beanstalkd: yourbeanstalkserver:11300
   tube: laconica-in
+
+feeders:
+- update@identi.ca
