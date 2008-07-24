@@ -8,10 +8,29 @@ require 'beanstalk-client'
 
 require 'laconicabot/config'
 
+def process_outgoing(job, server)
+  stuff = job.ybody
+  server.deliver stuff['to'], stuff['msg']
+end
+
 def inner_loop(server)
+  beanstalk = Beanstalk::Pool.new [LaconicaBot::Config::CONF['outgoing']['beanstalkd']]
+  beanstalk.watch LaconicaBot::Config::CONF['outgoing']['tube']
+  beanstalk.ignore 'default'
+
   loop do
     server.xmpp_updates
-    sleep 3600
+    begin
+      # Process 100 outgoing or wait for a 15 minute delay.  Whichever
+      # comes first.
+      100.times do
+        job = beanstalk.reserve 900
+        process_outgoing job, server
+        job.delete
+      end
+    rescue Beanstalk::TimedOut
+      nil
+    end
   end
 rescue StandardError, Interrupt
   puts "Error in inner loop:  #{$!}" + $!.backtrace.join("\n\t")

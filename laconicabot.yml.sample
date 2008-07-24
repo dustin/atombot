@@ -4,5 +4,9 @@ incoming:
   beanstalkd: yourbeanstalkserver:11300
   tube: laconica-in
 
+outgoing:
+  beanstalkd: yourbeanstalkserver:11300
+  tube: laconica-out
+
 feeders:
 - update@identi.ca
