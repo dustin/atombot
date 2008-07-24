@@ -105,7 +105,7 @@ class MyClient < Jabber::Simple
   def process_user_message(msg)
     return if msg.body.nil?
     puts "user message from #{msg.from.to_s}: #{msg.body}"
-    $stdout.flush
+    deliver msg.from, "Sorry, I don't currently have any control messages."
   rescue StandardError, Interrupt
     puts "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
     $stdout.flush
