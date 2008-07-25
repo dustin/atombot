@@ -95,7 +95,8 @@ class MyClient < Jabber::Simple
     @beanstalk.yput({:author => author,
       :authorlink => authorlink,
       :message => message,
-      :id => id
+      :id => id,
+      :atom => entry.to_s
       })
   rescue StandardError, Interrupt
     puts "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t")
