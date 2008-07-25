@@ -6,7 +6,7 @@ require 'xmpp4r-simple'
 require 'htmlentities'
 require 'beanstalk-client'
 
-require 'laconicabot/config'
+require 'atombot/config'
 
 def process_outgoing(job, server)
   stuff = job.ybody
@@ -14,8 +14,8 @@ def process_outgoing(job, server)
 end
 
 def inner_loop(server)
-  beanstalk = Beanstalk::Pool.new [LaconicaBot::Config::CONF['outgoing']['beanstalkd']]
-  beanstalk.watch LaconicaBot::Config::CONF['outgoing']['tube']
+  beanstalk = Beanstalk::Pool.new [AtomBot::Config::CONF['outgoing']['beanstalkd']]
+  beanstalk.watch AtomBot::Config::CONF['outgoing']['tube']
   beanstalk.ignore 'default'
 
   loop do
@@ -66,8 +66,8 @@ end
 class MyClient < Jabber::Simple
 
   def initialize(jid, pass)
-    @beanstalk = Beanstalk::Pool.new [LaconicaBot::Config::CONF['incoming']['beanstalkd']]
-    @beanstalk.use LaconicaBot::Config::CONF['incoming']['tube']
+    @beanstalk = Beanstalk::Pool.new [AtomBot::Config::CONF['incoming']['beanstalkd']]
+    @beanstalk.use AtomBot::Config::CONF['incoming']['tube']
 
     super(jid, pass)
     setup_callback
@@ -112,7 +112,7 @@ class MyClient < Jabber::Simple
   end
 
   def from_a_feeder?(message)
-    LaconicaBot::Config::FEEDERS.include? message.from.bare.to_s
+    AtomBot::Config::FEEDERS.include? message.from.bare.to_s
   end
 
   def setup_callback
@@ -145,8 +145,8 @@ loop do
 
   # Jabber::debug=true
   server = MyClient.new(
-    LaconicaBot::Config::CONF['incoming']['jid'],
-    LaconicaBot::Config::CONF['incoming']['pass'])
+    AtomBot::Config::CONF['incoming']['jid'],
+    AtomBot::Config::CONF['incoming']['pass'])
   server.status nil, 'Watching for messages...'
 
   puts "Set up with #{server.inspect}"

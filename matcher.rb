@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'beanstalk-client'
 
-require 'laconicabot/config'
+require 'atombot/config'
 
 class Match
   attr_reader :jid, :msg
@@ -17,14 +17,14 @@ end
 class Matcher
 
   def initialize
-    @beanstalk = Beanstalk::Pool.new [LaconicaBot::Config::CONF['incoming']['beanstalkd']]
-    @beanstalk.watch LaconicaBot::Config::CONF['incoming']['tube']
+    @beanstalk = Beanstalk::Pool.new [AtomBot::Config::CONF['incoming']['beanstalkd']]
+    @beanstalk.watch AtomBot::Config::CONF['incoming']['tube']
     @beanstalk.ignore 'default'
-    @beanstalk.use LaconicaBot::Config::CONF['outgoing']['tube']
+    @beanstalk.use AtomBot::Config::CONF['outgoing']['tube']
   end
 
   def look_for_matches(stuff)
-    if /dlsspy|dustin|twitterspy|zfs|xmpp|track/.match stuff[:message]
+    if /\b(dlsspy|dustin|twitterspy|zfs|xmpp|track|android|protobuf|protocol.*buffers|datamapper|github|git|jabber|memcached|sallings|zfs)\b/.match stuff[:message]
       [Match.new('dustin@sallings.org', stuff)]
     else
       []

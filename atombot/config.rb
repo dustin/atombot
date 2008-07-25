@@ -1,9 +1,9 @@
 require 'rubygems'
 require 'yaml'
 
-module LaconicaBot
+module AtomBot
   module Config
-    CONF = ::YAML.load_file 'laconicabot.yml'
+    CONF = ::YAML.load_file 'atombot.yml'
     FEEDERS = CONF['feeders']
     VERSION = `git rev-parse --short HEAD`
   end
