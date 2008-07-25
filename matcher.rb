@@ -22,17 +22,22 @@ class Matcher
     @beanstalk.watch AtomBot::Config::CONF['incoming']['tube']
     @beanstalk.ignore 'default'
     @beanstalk.use AtomBot::Config::CONF['outgoing']['tube']
+
+    load_matches
+  end
+
+  def load_matches
+    tomatch=%w(dlsspy dustin twiterspy zfs xmpp track android protbuf datamapper
+      github git jabber memcached sallings zfs trie)
+    me = 'dustin@sallings.org'
+    @matches = Trie.new
+    tomatch.each { |w| @matches.insert(w, me) }
   end
 
   def look_for_matches(stuff)
     words = stuff[:message].gsub(/[.,'";]/, '').downcase.split
-    tomatch=%w(dlsspy dustin twiterspy zfs xmpp track android protbuf datamapper
-      github git jabber memcached sallings zfs trie)
-    me = 'dustin@sallings.org'
-    trie = Trie.new
-    tomatch.each { |w| trie.insert(w, me) }
 
-    words.map {|w| trie[w]}.flatten.uniq.map {|u| Match.new(u, stuff)}
+    words.map {|w| @matches[w]}.flatten.uniq.map {|u| Match.new(u, stuff)}
   end
 
   def enqueue_match(match)
