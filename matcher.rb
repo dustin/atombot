@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
+require 'trie'
 require 'beanstalk-client'
 
 require 'atombot/config'
@@ -24,11 +25,14 @@ class Matcher
   end
 
   def look_for_matches(stuff)
-    if /\b(dlsspy|dustin|twitterspy|zfs|xmpp|track|android|protobuf|protocol.*buffers|datamapper|github|git|jabber|memcached|sallings|zfs)\b/.match stuff[:message]
-      [Match.new('dustin@sallings.org', stuff)]
-    else
-      []
-    end
+    words = stuff[:message].gsub(/[.,'";]/, '').downcase.split
+    tomatch=%w(dlsspy dustin twiterspy zfs xmpp track android protbuf datamapper
+      github git jabber memcached sallings zfs trie)
+    me = 'dustin@sallings.org'
+    trie = Trie.new
+    tomatch.each { |w| trie.insert(w, me) }
+
+    words.map {|w| trie[w]}.flatten.uniq.map {|u| Match.new(u, stuff)}
   end
 
   def enqueue_match(match)
