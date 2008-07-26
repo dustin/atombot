@@ -90,6 +90,11 @@ module AtomBot
           $stdout.flush
         end
       end
+
+      @client.add_presence_callback do |presence|
+        puts "*** #{presence.from} -> #{presence.type.nil? ? :available : presence.type}"
+      end
+
     end
 
     def inner_loop      
