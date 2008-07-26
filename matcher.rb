@@ -52,6 +52,7 @@ class Matcher
   def process
     job = @beanstalk.reserve
     stuff = job.ybody
+    puts "Processing #{stuff[:message]}"
     matches = look_for_matches stuff
     job.delete
     matches.each { |match| enqueue_match match }
