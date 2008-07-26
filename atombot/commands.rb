@@ -122,7 +122,7 @@ Track gives you powerful queries delivered in realtime to your IM client.
 Example queries:
 
 track iphone
-track iphone OR android
+track iphone -android
 track iphone android
 EOF
 
@@ -140,7 +140,7 @@ Untrack tells atombot to stop tracking the given query.
 Examples:
 
 untrack iphone
-untrack iphone OR android
+untrack iphone -android
 untrack iphone android
 EOF
 
