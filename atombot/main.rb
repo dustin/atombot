@@ -2,10 +2,14 @@ require 'htmlentities'
 
 require 'atombot/config'
 require 'atombot/models'
+require 'atombot/commands'
+require 'atombot/delivery_helper'
 
 module AtomBot
 
   class Main
+
+    include AtomBot::DeliveryHelper
 
     def initialize
       @beanstalk_out = Beanstalk::Pool.new [AtomBot::Config::CONF['outgoing']['beanstalkd']]
@@ -22,18 +26,6 @@ module AtomBot
       register_callbacks
 
       @client.send(Jabber::Presence.new(nil, 'Waiting...'))
-    end
-
-    def deliver(jid, message, type=:chat)
-      if message.kind_of?(Jabber::Message)
-        msg = message
-        msg.to = jid
-      else
-        msg = Jabber::Message.new(jid)
-        msg.type = type
-        msg.body = message
-      end
-      @client.send msg
     end
 
     def process_outgoing(job)
@@ -66,11 +58,15 @@ module AtomBot
 
     def process_user_message(msg)
       return if msg.body.nil?
-      puts "user message from #{msg.from.to_s}: #{msg.body}"
-      deliver msg.from, "Sorry, I don't currently have any control messages."
+      decoded = HTMLEntities.new.decode(msg.body).gsub(/&/, '&amp;')
+      cmd, args = decoded.split(' ', 2)
+      cp = AtomBot::Commands::CommandProcessor.new @client
+      user = User.first(:jid => msg.from.bare.to_s) || User.create(:jid => msg.from.bare.to_s)
+      cp.dispatch cmd.downcase, user, args
     rescue StandardError, Interrupt
       puts "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
       $stdout.flush
+      deliver msg.from, "Error processing your message."
     end
 
     def from_a_feeder?(message)

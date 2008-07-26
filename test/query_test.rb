@@ -71,4 +71,17 @@ class QueryTest < Test::Unit::TestCase
     assert !q.matches?("Is paint cool stuff?")
   end
 
+  def test_positive_and_negative
+    q = Query.new 'git -gregkh'
+    assert q.matches?("This just talks about git.")
+    assert !q.matches?("This just talks about gregkh and git.")
+  end
+
+  def test_positive_and_negative_alt
+    q = Query.new 'git -gregkh'
+    assert q.matches?("This just talks about git.")
+    assert !q.matches?("This is about git and (gregkh who logs shell stuff).")
+  end
+
+
 end

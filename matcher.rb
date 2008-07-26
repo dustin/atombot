@@ -5,6 +5,8 @@ require 'trie'
 require 'beanstalk-client'
 
 require 'atombot/config'
+require 'atombot/models'
+require 'atombot/query'
 
 class Match
   attr_reader :jid, :msg
@@ -28,18 +30,31 @@ class Matcher
 
   def load_matches
     @matches = Trie.new
-    dustin=%w(dlsspy dustin twiterspy zfs xmpp track android protbuf datamapper
-      github git jabber memcached sallings zfs trie)
-    dustin.each { |w| @matches.insert(w, 'dustin@sallings.org') }
 
-    oliver=%w(sap sdn)
-    oliver.each { |w| @matches.insert(w, 'zsapping@googlemail.com') }
+    users = Hash[* User.all.map{|u| [u.id, u.jid]}.flatten]
+
+    Track.all.each do |t|
+      q = AtomBot::Query.new t.query
+      q.positive.each do |word|
+        value = [users[t.user_id], q]
+        @matches.insert word.to_s, value
+      end
+    end
+
+    puts "Loaded #{@matches.size} things into the trie."
   end
 
   def look_for_matches(stuff)
+    # Need some signaling to make this not happen most of the time.
+    load_matches
     words = stuff[:message].gsub(/[.,'";]/, '').downcase.split
 
-    words.map {|w| @matches[w]}.flatten.uniq.map {|u| Match.new(u, stuff)}
+    words.map {|w| @matches[w]}.map do |junk, rest|
+      jid, q = junk
+      unless q.nil?
+        q.matches?(stuff[:message]) ? jid : nil
+      end
+    end.flatten.compact.uniq.map{|jid| Match.new(jid, stuff)}
   end
 
   def enqueue_match(match)

@@ -25,7 +25,7 @@ module AtomBot
     end
 
     def matches?(text)
-      words = Set.new(text.gsub(/[.,'";]/, '').downcase.split)
+      words = Set.new(text.gsub(/[.,'";\(\)]/, '').downcase.split)
       pos_str = Set.new(@positive.map{|w| w.to_s})
       neg_str = Set.new(@negative.map{|w| w.to_s})
 
