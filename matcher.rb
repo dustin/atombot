@@ -27,11 +27,13 @@ class Matcher
   end
 
   def load_matches
-    tomatch=%w(dlsspy dustin twiterspy zfs xmpp track android protbuf datamapper
-      github git jabber memcached sallings zfs trie)
-    me = 'dustin@sallings.org'
     @matches = Trie.new
-    tomatch.each { |w| @matches.insert(w, me) }
+    dustin=%w(dlsspy dustin twiterspy zfs xmpp track android protbuf datamapper
+      github git jabber memcached sallings zfs trie)
+    dustin.each { |w| @matches.insert(w, 'dustin@sallings.org') }
+
+    oliver=%w(sap sdn)
+    oliver.each { |w| @matches.insert(w, 'zsapping@googlemail.com') }
   end
 
   def look_for_matches(stuff)
@@ -42,6 +44,8 @@ class Matcher
 
   def enqueue_match(match)
     message = "#{match.msg[:author]}: #{match.msg[:message]}"
+    puts "Match sending to #{match.jid}: #{message}"
+    $stdout.flush
     @beanstalk.yput({'to' => match.jid, 'msg' => message })
   end
 
