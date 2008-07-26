@@ -1,4 +1,5 @@
 require 'htmlentities'
+require 'xmpp4r/roster'
 
 require 'atombot/config'
 require 'atombot/models'
@@ -74,6 +75,12 @@ module AtomBot
     end
 
     def register_callbacks
+      @roster = Jabber::Roster::Helper.new(@client)
+
+      @roster.add_subscription_request_callback do |roster_item, presence|
+        @roster.accept_subscription(presence.from)
+      end
+
       @client.add_message_callback do |message|
         begin
           if from_a_feeder? message
