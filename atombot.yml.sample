@@ -1,3 +1,6 @@
+general:
+  db: postgres://username:password@someserver/atombot
+
 incoming:
   jid: your@bot/name
   pass: yourb0tp455
