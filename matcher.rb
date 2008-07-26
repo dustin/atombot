@@ -52,7 +52,7 @@ class Matcher
     words.map {|w| @matches[w]}.map do |junk, rest|
       jid, q = junk
       unless q.nil?
-        q.matches?(stuff[:message]) ? jid : nil
+        q.matches?(words) ? jid : nil
       end
     end.flatten.compact.uniq.map{|jid| Match.new(jid, stuff)}
   end
