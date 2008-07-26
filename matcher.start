@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Shell script for running the matcher.  I'd rather use something like
+# launchd, but that's unavailable to me on my servers.
+
+exec > matcher.log
+exec 2>&1
+
+while :
+do
+	ruby matcher.rb
+	sleep 5
+done
