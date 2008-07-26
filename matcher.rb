@@ -48,6 +48,7 @@ class Matcher
     # Need some signaling to make this not happen most of the time.
     load_matches
     words = stuff[:message].gsub(/[.,'";]/, '').downcase.split
+    words << "from:#{stuff[:author].downcase}"
 
     words.map {|w| @matches[w]}.map do |junk, rest|
       jid, q = junk
