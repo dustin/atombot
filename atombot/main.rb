@@ -59,13 +59,15 @@ module AtomBot
     end
 
     def subscribe_to_unknown
-      User.all(:status => nil).each do |u|
-        puts "Sending subscription request to #{u.jid}"
-        req = Jabber::Presence.new.set_type(:subscribe)
-        req.to = u.jid
-        @client.send req
-      end
+      User.all(:status => nil).each {|u| subscribe_to u.jid}
       $stdout.flush
+    end
+
+    def subscribe_to(jid)
+      puts "Sending subscription request to #{jid}"
+      req = Jabber::Presence.new.set_type(:subscribe)
+      req.to = jid
+      @client.send req
     end
 
     def process_user_message(msg)
@@ -96,6 +98,7 @@ module AtomBot
 
       @roster.add_subscription_request_callback do |roster_item, presence|
         @roster.accept_subscription(presence.from)
+        subscribe_to presence.from.bare.to_s
       end
 
       @client.add_message_callback do |message|
