@@ -25,6 +25,7 @@ module AtomBot
       @client.connect
       @client.auth(AtomBot::Config::CONF['incoming']['pass'])
       register_callbacks
+      subscribe_to_unknown
 
       @client.send(Jabber::Presence.new(nil, 'Waiting...'))
     end
@@ -54,6 +55,16 @@ module AtomBot
         })
     rescue StandardError, Interrupt
       puts "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t")
+      $stdout.flush
+    end
+
+    def subscribe_to_unknown
+      User.all(:status => nil).each do |u|
+        puts "Sending subscription request to #{u.jid}"
+        req = Jabber::Presence.new.set_type(:subscribe)
+        req.to = u.jid
+        @client.send req
+      end
       $stdout.flush
     end
 
@@ -103,6 +114,7 @@ module AtomBot
       @client.add_presence_callback do |presence|
         status = presence.type.nil? ? :available : presence.type
         puts "*** #{presence.from} -> #{status}"
+        $stdout.flush
         User.update_status presence.from.bare.to_s, status.to_s
       end
     end
@@ -111,6 +123,7 @@ module AtomBot
       loop do
         job = @beanstalk_out.reserve
         process_outgoing job
+        $stdout.flush
         job.delete
       end
     rescue StandardError, Interrupt
