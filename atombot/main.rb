@@ -97,7 +97,7 @@ module AtomBot
       @client.add_presence_callback do |presence|
         status = presence.type.nil? ? :available : presence.type
         puts "*** #{presence.from} -> #{status}"
-        User.update_status presence.from.bare.to_s, status
+        User.update_status presence.from.bare.to_s, status.to_s
       end
 
     end

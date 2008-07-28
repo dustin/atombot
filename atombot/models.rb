@@ -19,7 +19,6 @@ class User
   # Find or create a user and update the status
   def self.update_status(jid, status)
     u = first(:jid => jid) || create(:jid => jid)
-    was_available = u.available?
     u.status = status
     u.save
     u
