@@ -32,6 +32,7 @@ module AtomBot
 
     def process_outgoing(job)
       stuff = job.ybody
+      puts "]]] outgoing message to #{stuff['to']}"
       deliver stuff['to'], stuff['msg']
     end
 
@@ -46,7 +47,7 @@ module AtomBot
       # Strip off the author's name from the message
       message.gsub!(Regexp.new("^#{author}: "), '')
 
-      puts "msg from #{author}: #{message}"
+      puts "[[[ msg from #{author}: #{message}"
       @beanstalk_in.yput({:author => author,
         :authorlink => authorlink,
         :message => message,
@@ -72,7 +73,7 @@ module AtomBot
     def process_user_message(msg)
       return if msg.body.nil?
       decoded = HTMLEntities.new.decode(msg.body).gsub(/&/, '&amp;')
-      puts "User message from #{msg.from.to_s}:  #{decoded}"
+      puts "<<< User message from #{msg.from.to_s}:  #{decoded}"
       cmd, args = decoded.split(' ', 2)
       cp = AtomBot::Commands::CommandProcessor.new @client
       user = User.first(:jid => msg.from.bare.to_s) || User.create(:jid => msg.from.bare.to_s)
