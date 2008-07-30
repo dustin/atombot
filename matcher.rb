@@ -47,7 +47,7 @@ class Matcher
   def look_for_matches(stuff)
     # Need some signaling to make this not happen most of the time.
     load_matches
-    words = stuff[:message].gsub(/[.,'";]/, '').downcase.split
+    words = stuff[:message].downcase.split /\W+/
     words << "from:#{stuff[:author].downcase}"
 
     words.map {|w| @matches[w]}.map do |junk, rest|
