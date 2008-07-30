@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
-require 'trie'
 require 'beanstalk-client'
 
 require 'atombot/config'
@@ -29,19 +28,19 @@ class Matcher
   end
 
   def load_matches
-    @matches = Trie.new
+    @matches = Hash.new {|h,k| h[k] = []; h[k]}
 
     users = Hash[* User.all.map{|u| [u.id, u.jid]}.flatten]
 
     Track.all.each do |t|
       q = AtomBot::Query.new t.query
+      value = [users[t.user_id], q]
       q.positive.each do |word|
-        value = [users[t.user_id], q]
-        @matches.insert word.to_s, value
+        @matches[word.to_s] << value
       end
     end
 
-    puts "Loaded #{@matches.size} things into the trie."
+    puts "Loaded #{@matches.size} things into the hash."
   end
 
   def look_for_matches(stuff)
