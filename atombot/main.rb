@@ -55,7 +55,6 @@ module AtomBot
         })
     rescue StandardError, Interrupt
       puts "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t")
-      $stdout.flush
     end
 
     def subscribe_to_unknown
@@ -73,13 +72,13 @@ module AtomBot
     def process_user_message(msg)
       return if msg.body.nil?
       decoded = HTMLEntities.new.decode(msg.body).gsub(/&/, '&amp;')
+      puts "User message from #{msg.from.to_s}:  #{decoded}"
       cmd, args = decoded.split(' ', 2)
       cp = AtomBot::Commands::CommandProcessor.new @client
       user = User.first(:jid => msg.from.bare.to_s) || User.create(:jid => msg.from.bare.to_s)
       cp.dispatch cmd.downcase, user, args
     rescue StandardError, Interrupt
       puts "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
-      $stdout.flush
       deliver msg.from, "Error processing your message."
     end
 
@@ -108,6 +107,7 @@ module AtomBot
           else
             process_user_message message
           end
+          $stdout.flush
         rescue StandardError, Interrupt
           puts "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
           $stdout.flush
