@@ -98,6 +98,17 @@ module AtomBot
         end
       end
 
+      cmd :broadcast do |user, arg|
+        if AtomBot::Config::CONF['admins'].include? user.jid
+          User.all.each do |u|
+            send_msg user, "Sending to #{u.jid}"
+            send_msg u, arg
+          end
+        else
+          send_msg user, "Sorry, you're not an admin."
+        end
+      end
+
       cmd :version do |user, nothing|
         out = ["Running version #{AtomBot::Config::VERSION}"]
         send_msg user, out.join("\n")

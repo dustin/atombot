@@ -13,3 +13,6 @@ outgoing:
 
 feeders:
 - update@identi.ca
+
+admins:
+- you@example.com
