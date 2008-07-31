@@ -95,7 +95,7 @@ module AtomBot
       update_status
     rescue StandardError, Interrupt
       puts "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
-      deliver msg.from, "Error processing your message."
+      deliver msg.from.bare.to_s, "Error processing your message (#{$!})"
     end
 
     def from_a_feeder?(message)
