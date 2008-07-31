@@ -3,6 +3,8 @@ gem 'dm-core'
 require 'dm-core'
 require 'dm-aggregates'
 
+require 'atombot/query'
+
 class User
   include DataMapper::Resource
   property :id, Integer, :serial => true, :unique_index => true
@@ -29,6 +31,8 @@ class User
   end
 
   def track(query)
+    # Validate the query...
+    AtomBot::Query.new query
     params = { :query => query, :user_id => self.id }
     t = Track.first(params) || Track.create(params)
   end
