@@ -92,7 +92,7 @@ module AtomBot
       cp = AtomBot::Commands::CommandProcessor.new @client
       user = User.first(:jid => msg.from.bare.to_s) || User.create(:jid => msg.from.bare.to_s)
       cp.dispatch cmd.downcase, user, args
-      set_status
+      update_status
     rescue StandardError, Interrupt
       puts "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
       deliver msg.from, "Error processing your message."
