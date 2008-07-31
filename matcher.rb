@@ -48,6 +48,7 @@ class Matcher
     load_matches
     words = stuff[:message].downcase.split /\W+/
     words << "from:#{stuff[:author].downcase}"
+    words << "#{stuff[:author].downcase}"
 
     words.map {|w| @matches[w]}.map do |junk, rest|
       jid, q = junk
