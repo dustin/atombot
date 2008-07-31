@@ -125,6 +125,17 @@ module AtomBot
         end
       end
 
+      cmd :adm_subscribe do |user, jid|
+        if AtomBot::Config::CONF['admins'].include? user.jid
+          req = Jabber::Presence.new.set_type(:subscribe)
+          req.to = jid
+          @client.send req
+          send_msg user, "Sent sub req to #{jid}"
+        else
+          send_msg user, "Sorry, you're not an admin."
+        end
+      end
+
       cmd :version do |user, nothing|
         out = ["Running version #{AtomBot::Config::VERSION}"]
         send_msg user, out.join("\n")
