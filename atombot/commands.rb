@@ -73,7 +73,7 @@ module AtomBot
       end
 
       def send_msg(user, text)
-        deliver_without_suppression user.jid, text
+        deliver_without_suppression user, text
       end
 
       cmd :help, "Get help for commands." do |user, arg|
