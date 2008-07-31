@@ -102,7 +102,7 @@ module AtomBot
         if AtomBot::Config::CONF['admins'].include? user.jid
           User.all.each do |u|
             send_msg user, "Sending to #{u.jid}"
-            send_msg u, arg
+            deliver u, arg
           end
         else
           send_msg user, "Sorry, you're not an admin."
