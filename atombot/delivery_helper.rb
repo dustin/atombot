@@ -2,6 +2,8 @@ module AtomBot
   module DeliveryHelper
 
     def deliver(jid, message, type=:chat)
+      u = User.first(:jid => jid)
+      return if u.nil? || !u.ready_to_receive_message
       if message.kind_of?(Jabber::Message)
         msg = message
         msg.to = jid

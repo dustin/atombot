@@ -24,6 +24,10 @@ class User
     u
   end
 
+  def ready_to_receive_message
+    self.active && ['available', 'chat', 'away'].include?(self.status)
+  end
+
   def track(query)
     params = { :query => query, :user_id => self.id }
     t = Track.first(params) || Track.create(params)

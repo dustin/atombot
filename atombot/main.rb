@@ -131,7 +131,11 @@ module AtomBot
       end
 
       @client.add_presence_callback do |presence|
-        status = presence.type.nil? ? :available : presence.type
+        if presence.type.nil?
+          status = presence.show.nil? ? :available : presence.show
+        else
+          status = presence.type
+        end
         puts "*** #{presence.from} -> #{status}"
         $stdout.flush
         User.update_status presence.from.bare.to_s, status.to_s
