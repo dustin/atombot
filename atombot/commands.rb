@@ -112,6 +112,19 @@ module AtomBot
         end
       end
 
+      cmd :adm_im do |user, arg|
+        if AtomBot::Config::CONF['admins'].include? user.jid
+          jid, rest=arg.split(/\s+/, 2)
+          msg = Jabber::Message.new jid
+          msg.type = :chat
+          msg.body = rest
+          @client.send msg
+          send_msg user, "Sent message to #{jid}"
+        else
+          send_msg user, "Sorry, you're not an admin."
+        end
+      end
+
       cmd :version do |user, nothing|
         out = ["Running version #{AtomBot::Config::VERSION}"]
         send_msg user, out.join("\n")
