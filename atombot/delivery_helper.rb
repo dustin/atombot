@@ -14,8 +14,10 @@ module AtomBot
       u = resolve_user(recip)
       if u.nil? || !u.ready_to_receive_message
         puts "... Suppressing send to #{jid}"
+        false
       else
         deliver_without_suppression(u, message, type)
+        true
       end
     end
 

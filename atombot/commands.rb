@@ -101,8 +101,11 @@ module AtomBot
       cmd :broadcast do |user, arg|
         if AtomBot::Config::CONF['admins'].include? user.jid
           User.all.each do |u|
-            send_msg user, "Sending to #{u.jid}"
-            deliver u, arg
+            if deliver u, arg
+              send_msg user, "Sending to #{u.jid}"
+            else
+              send_msg user, "Suppressed send to #{u.jid}"
+            end
           end
         else
           send_msg user, "Sorry, you're not an admin."
