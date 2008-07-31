@@ -27,7 +27,21 @@ module AtomBot
       register_callbacks
       subscribe_to_unknown
 
-      @client.send(Jabber::Presence.new(nil, 'Waiting...'))
+      @num_users = 0
+      @num_tracks = 0
+
+      update_status
+    end
+
+    def update_status
+      nu = User.count
+      nt = Track.count
+      if @num_users != nu || @num_tracks != nt
+        status = "Tracking #{nt} topics for #{nu} users"
+        @client.send(Jabber::Presence.new(nil, status, 1))
+        @num_users = nu
+        @num_tracks = nt
+      end
     end
 
     def process_outgoing(job)
@@ -78,6 +92,7 @@ module AtomBot
       cp = AtomBot::Commands::CommandProcessor.new @client
       user = User.first(:jid => msg.from.bare.to_s) || User.create(:jid => msg.from.bare.to_s)
       cp.dispatch cmd.downcase, user, args
+      set_status
     rescue StandardError, Interrupt
       puts "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
       deliver msg.from, "Error processing your message."
