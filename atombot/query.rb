@@ -27,7 +27,7 @@ module AtomBot
     def matches?(input)
       words = case input
       when String
-        Set.new(input.gsub(/[.,'";\(\)]/, '').downcase.split)
+        Set.new(input.downcase.split(/\W/))
       when Array
         Set.new(input)
       end
