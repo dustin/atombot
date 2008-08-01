@@ -121,7 +121,9 @@ module AtomBot
 
       @client.add_message_callback do |message|
         begin
-          if from_a_feeder? message
+          if message.type == :error
+            puts "Error message from #{message.from.to_s}:  #{message.to_s}"
+          elsif from_a_feeder? message
             process_feeder_message message
           else
             process_user_message message
