@@ -156,7 +156,7 @@ module AtomBot
 
       cmd :track, "Track a topic" do |user, arg|
         with_arg(user, arg) do |a|
-          user.track a
+          user.track a.downcase
           send_msg user, "Tracking #{a}"
         end
       end
@@ -171,7 +171,7 @@ EOF
 
       cmd :untrack, "Stop tracking a topic" do |user, arg|
         with_arg(user, arg) do |a|
-          if user.untrack a
+          if user.untrack a.downcase
             send_msg user, "Stopped tracking #{a}"
           else
             send_msg user, "Didn't stop tracking #{a} (are you sure you were tracking it?)"
