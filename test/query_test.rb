@@ -1,6 +1,6 @@
 require "test/unit"
 
-require "../atombot/query"
+require "atombot/query"
 
 class QueryTest < Test::Unit::TestCase
 
