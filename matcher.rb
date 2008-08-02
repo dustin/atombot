@@ -75,6 +75,7 @@ class Matcher
   rescue StandardError, Interrupt
     puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
+  ensure
     $stdout.flush
   end
 
