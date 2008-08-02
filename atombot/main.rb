@@ -30,15 +30,19 @@ module AtomBot
       @num_users = 0
       @num_tracks = 0
 
+      set_status "To Serve Man"
       update_status
+    end
+
+    def set_status(msg)
+        @client.send(Jabber::Presence.new(nil, msg, 1))
     end
 
     def update_status
       nu = User.count
       nt = Track.count
       if @num_users != nu || @num_tracks != nt
-        status = "Tracking #{nt} topics for #{nu} users"
-        @client.send(Jabber::Presence.new(nil, status, 1))
+        set_status "Tracking #{nt} topics for #{nu} users"
         @num_users = nu
         @num_tracks = nt
       end
