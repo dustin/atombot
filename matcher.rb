@@ -6,13 +6,14 @@ require 'beanstalk-client'
 require 'atombot/config'
 require 'atombot/models'
 require 'atombot/query'
+require 'atombot/multimatch'
 
 class Match
-  attr_reader :uid, :stuff
+  attr_reader :uid, :msg
 
-  def initialize(uid, stuff)
+  def initialize(uid, msg)
     @uid=uid
-    @stuff=stuff
+    @msg=msg
   end
 
   def user
@@ -33,7 +34,7 @@ class Matcher
 
   def load_matches
     @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query, t.user_id]})
-    puts "Loaded #{@matches.size} things into the hash."
+    puts "Loaded #{@matcher.size} matches"
   end
 
   def look_for_matches(stuff)
@@ -43,7 +44,7 @@ class Matcher
     words << "from:#{stuff[:author].downcase}"
     words << "#{stuff[:author].downcase}"
 
-    @matcher.matches(words).each do |id| { Match.new id, stuff }
+    @matcher.matches(words).map { |id| Match.new(id, stuff) }
   end
 
   def enqueue_match(match)
