@@ -210,7 +210,7 @@ Usage:  add_service [svcname] [username] [password]
 
 Example:  add_service identi.ca myusername m3p455w4r6
 
-see "help services" for a list of available services
+see "services" for a list of available services
 EOF
 
 
