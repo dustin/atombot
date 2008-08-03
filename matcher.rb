@@ -8,11 +8,15 @@ require 'atombot/models'
 require 'atombot/query'
 
 class Match
-  attr_reader :jid, :msg
+  attr_reader :uid, :stuff
 
-  def initialize(jid, msg)
-    @jid=jid
-    @msg=msg
+  def initialize(uid, stuff)
+    @uid=uid
+    @stuff=stuff
+  end
+
+  def user
+    User.first :id => @uid
   end
 end
 
@@ -28,41 +32,26 @@ class Matcher
   end
 
   def load_matches
-    @matches = Hash.new {|h,k| h[k] = []; h[k]}
-
-    users = Hash[* User.all.map{|u| [u.id, u.jid]}.flatten]
-
-    Track.all.each do |t|
-      q = AtomBot::Query.new t.query
-      value = [users[t.user_id], q]
-      q.positive.each do |word|
-        @matches[word.to_s] << value
-      end
-    end
-
+    @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query, t.user_id]})
     puts "Loaded #{@matches.size} things into the hash."
   end
 
   def look_for_matches(stuff)
     # Need some signaling to make this not happen most of the time.
     load_matches
-    words = stuff[:message].downcase.split /\W+/
+    words = Set.new(stuff[:message].downcase.split(/\W+/))
     words << "from:#{stuff[:author].downcase}"
     words << "#{stuff[:author].downcase}"
 
-    words.map {|w| @matches[w]}.map do |junk, rest|
-      jid, q = junk
-      unless q.nil?
-        q.matches?(words) ? jid : nil
-      end
-    end.flatten.compact.uniq.map{|jid| Match.new(jid, stuff)}
+    @matcher.matches(words).each do |id| { Match.new id, stuff }
   end
 
   def enqueue_match(match)
     message = "#{match.msg[:author]}: #{match.msg[:message]}"
-    puts "Match sending to #{match.jid}: #{message}"
+    user = match.user
+    puts "Match sending to #{user.jid}: #{message}"
     $stdout.flush
-    @beanstalk.yput({'to' => match.jid, 'msg' => message })
+    @beanstalk.yput({'to' => user.jid, 'msg' => message })
   end
 
   def process
