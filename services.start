@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Shell script for running the services.  I'd rather use something like
+# launchd, but that's unavailable to me on my servers.
+
+exec > services.log
+exec 2>&1
+
+ulimit -v 60000
+ulimit -m 60000
+
+while :
+do
+	ruby services.rb
+	sleep 5
+done
