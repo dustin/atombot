@@ -103,10 +103,12 @@ class ServiceHandler
     puts "Processing #{stuff.merge(:password => 'xxxxxxxx').inspect} for #{user.jid}"
     self.send "process_#{stuff[:type]}", user, stuff
     job.delete
+    job = nil
   rescue StandardError, Interrupt
     puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
   ensure
+    job.decay unless job.nil?
     $stdout.flush
   end
 
