@@ -15,6 +15,8 @@ class User
 
   has n, :tracks
   has n, :user_services
+  has n, :tracked_messages
+  has n, :messages, :through => :tracked_messages
 
   # Find or create a user and update the status
   def self.update_status(jid, status)
@@ -68,4 +70,26 @@ class UserService
   property :password, String, :nullable => false
   belongs_to :user
   belongs_to :service
+end
+
+class Message
+  include DataMapper::Resource
+  property :id, Integer, :serial => true, :nullable => false, :unique_index => true
+  property :service_id, Integer, :nullable => false
+  property :remote_id, Integer, :nullable => false
+  property :sender_name, String, :nullable => false
+  property :body, String, :length => 240
+  property :atom, Text
+
+  belongs_to :service
+end
+
+class TrackedMessage
+  include DataMapper::Resource
+  property :id, Integer, :serial => true, :nullable => false, :unique_index => true
+  property :user_id, Integer, :nullable => false, :index => true
+  property :message_id, Integer, :nullable => false
+
+  belongs_to :user
+  belongs_to :message
 end

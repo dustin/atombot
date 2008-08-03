@@ -30,6 +30,8 @@ class Matcher
     @beanstalk.use AtomBot::Config::CONF['outgoing']['tube']
 
     load_matches
+    # Currently the only supported service.
+    @service = Service.first(:name => 'identica')
   end
 
   def load_matches
@@ -43,16 +45,24 @@ class Matcher
     words = Set.new(stuff[:message].downcase.split(/\W+/))
     words << "from:#{stuff[:author].downcase}"
     words << "#{stuff[:author].downcase}"
-
     @matcher.matches(words).map { |id| Match.new(id, stuff) }
   end
 
-  def enqueue_match(match)
+  def enqueue_match(msg, match)
     message = "#{match.msg[:author]}: #{match.msg[:message]}"
     user = match.user
     puts "Match sending to #{user.jid}: #{message}"
     $stdout.flush
     @beanstalk.yput({'to' => user.jid, 'msg' => message })
+    TrackedMessage.create(:user_id => user.id, :message_id => msg.id)
+  end
+
+  def store_message(stuff)
+    # XXX:  Allow for more than one service.
+    # XXX:  Fix the remote IDs
+    Message.create(:service_id => @service.id, :remote_id => -1,
+      :sender_name => stuff[:author], :body => stuff[:message],
+      :atom => stuff[:atom])
   end
 
   def process
@@ -60,9 +70,10 @@ class Matcher
     stuff = job.ybody
     puts "Processing #{stuff[:message]}"
     matches = look_for_matches stuff
+    msg = store_message(stuff)
     job.delete
     job = nil
-    matches.each { |match| enqueue_match match }
+    matches.each { |match| enqueue_match msg, match }
   rescue StandardError, Interrupt
     puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
