@@ -208,7 +208,7 @@ Add a service you can post to.
 
 Usage:  add_service [svcname] [username] [password]
 
-Example:  add_service identi.ca myusername m3p455w4r6
+Example:  add_service identica myusername m3p455w4r6
 
 see "services" for a list of available services
 EOF
@@ -256,7 +256,7 @@ EOF
             $1
           else
             # XXX:  Probably want to look this up per user
-            'identi.ca'
+            'identica'
           end
           service_msg(:user => user.id, :type => :post, :service => s, :msg => msg)
         end
@@ -270,7 +270,7 @@ otherwise your default service will be used.
 Examples:
 post Hello, identi.ca
 post !twitter Hello, twitter.
-post !identi.ca Hello, identi.ca
+post !identica Hello, identi.ca
 EOF
 
       cmd :autopost, "Enable or disable autopost" do |user, arg|

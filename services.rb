@@ -61,7 +61,7 @@ class ServiceHandler
     case usvc.service.name
     when 'twitter'
       "http://twitter.com/#{usvc.login}/statuses/#{resp.id}"
-    when 'identi.ca'
+    when 'identica'
       "http://identi.ca/notice/#{resp.id}"
     else
       "(unhandled service:  #{usvc.service.name})"
