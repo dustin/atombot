@@ -2,6 +2,7 @@ require 'rubygems'
 gem 'dm-core'
 require 'dm-core'
 require 'dm-aggregates'
+require 'dm-timestamps'
 
 require 'atombot/query'
 
@@ -80,6 +81,7 @@ class Message
   property :sender_name, String, :nullable => false
   property :body, String, :length => 240
   property :atom, Text
+  property :created_at, DateTime
 
   belongs_to :service
 end
