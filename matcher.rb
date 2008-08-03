@@ -60,11 +60,13 @@ class Matcher
     puts "Processing #{stuff[:message]}"
     matches = look_for_matches stuff
     job.delete
+    job = nil
     matches.each { |match| enqueue_match match }
   rescue StandardError, Interrupt
     puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
   ensure
+    job.decay unless job.nil?
     $stdout.flush
   end
 
