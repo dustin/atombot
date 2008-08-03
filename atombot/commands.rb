@@ -192,7 +192,26 @@ EOF
         send_msg user, "Tracking #{tracks.size} topics\n" + tracks.join("\n")
       end
 
+      cmd :add_service, "Add a service." do |user, arg|
+        errmsg="You must supply a service name, username, and password"
+        with_arg(user, arg, errmsg) do |sup|
+          s, u, p = sup.strip.split(/\s+/, 3)
+          if s.nil? || u.nil? || p.nil?
+            send_msg user, errmsg
+          else
+            service_msg(:user => user.id, :type => :setup, :service => s, :username => u, :password => p)
+          end
+        end
+      end
+
       private
+
+      def service_msg(msg)
+        beanstalk_svc = Beanstalk::Pool.new [AtomBot::Config::CONF['services']['beanstalkd']]
+        beanstalk_svc.use AtomBot::Config::CONF['services']['tube']
+        beanstalk_svc.yput(msg)
+        beanstalk_svc.close
+      end
 
       def logged_in?(user)
         !(user.username.blank? || user.password.blank?)

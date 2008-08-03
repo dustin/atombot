@@ -13,6 +13,7 @@ class User
   property :status, String
 
   has n, :tracks
+  has n, :user_services
 
   def auto_post
     false
@@ -51,4 +52,23 @@ class Track
   property :user_id, Integer, :nullable => false, :unique_index => :user_query
 
   belongs_to :user
+end
+
+class Service
+  include DataMapper::Resource
+  property :id, Integer, :serial => true, :unique_index => true
+  property :name, String, :nullable => false, :unique_index => true
+  property :hostname, String, :nullable => false
+  property :api_path, String, :nullable => false
+end
+
+class UserService
+  include DataMapper::Resource
+  property :id, Integer, :serial => true, :nullable => false, :unique_index => true
+  property :user_id, Integer, :nullable => false, :unique_index => :idx_us_u
+  property :service_id, Integer, :nullable => false, :unique_index => :idx_us_u
+  property :login, String, :nullable => false
+  property :password, String, :nullable => false
+  belongs_to :user
+  belongs_to :service
 end

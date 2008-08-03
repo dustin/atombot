@@ -11,6 +11,10 @@ outgoing:
   beanstalkd: yourbeanstalkserver:11300
   tube: laconica-out
 
+outgoing:
+  beanstalkd: yourbeanstalkserver:11300
+  tube: laconica-services
+
 feeders:
 - update@identi.ca
 
