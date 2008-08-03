@@ -42,8 +42,4 @@ loop do
   # Jabber::debug=true
 
   AtomBot::Main.new.run
-
-  puts "Set up with #{server.inspect}"
-  $stdout.flush
-  inner_loop client
 end

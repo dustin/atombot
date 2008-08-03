@@ -165,6 +165,8 @@ module AtomBot
     end
 
     def run
+      puts "Processing..."
+      $stdout.flush
       loop { inner_loop }
     end
   end
