@@ -209,7 +209,27 @@ Add a service you can post to.
 Usage:  add_service [svcname] [username] [password]
 
 Example:  add_service identi.ca myusername m3p455w4r6
+
+see "help services" for a list of available services
 EOF
+
+      cmd :services, "List all known services." do |user, arg|
+        services = Hash[* Service.all.map{|s| [s.name, s]}.flatten]
+        userv = Hash[* user.user_services.map{|us| [us.service.name, us]}.flatten]
+        userv.keys.each {|k| services.delete k}
+
+        out = []
+        unless userv.empty?
+          out << "Your Services:"
+          out += userv.to_a.sort.map { |k,v| "- #{k} (#{v.login})"}
+        end
+        unless services.empty?
+          out << "Available Services:"
+          out += services.keys.sort.map { |k| "- #{k}" }
+        end
+
+        send_msg user, out.join("\n")
+      end
 
       cmd :post, "Post an update to a service." do |user, arg|
         with_arg(user, arg, "What do you want to post?") do |msg|
