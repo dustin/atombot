@@ -46,6 +46,28 @@ class ServiceHandler
     Twitter::Base.new username, password, svc.hostname, svc.api_path
   end
 
+  def with_registered_user_service(user, svcname)
+    svc = @services[svcname]
+    error user, "svc not found, known services: #{@services.keys.sort.join ', '}" and return if svc.nil?
+    userv = user.user_services.first(:service_id => svc.id)
+    if userv
+      yield userv, service_for(userv.service, userv.login, Base64.decode64(userv.password))
+    else
+      error user, "You are not registered with #{svcname}"
+    end
+  end
+
+  def mk_url(usvc, resp)
+    case usvc.service.name
+    when 'twitter'
+      "http://twitter.com/#{usvc.login}/statuses/#{resp.id}"
+    when 'identi.ca'
+      "http://identi.ca/notice/#{resp.id}"
+    else
+      "(unhandled service:  #{usvc.service.name})"
+    end
+  end
+
   def process_setup(user, stuff)
     svc = @services[stuff[:service]]
     error user, "svc not found, known services: #{@services.keys.sort.join ', '}" and return if svc.nil?
@@ -61,6 +83,14 @@ class ServiceHandler
     rescue StandardError, Interrupt
       puts "#{$!}" + $!.backtrace.join("\n\t")
       error user, "Failed to register for #{svc.name} - check your password and stuff"
+    end
+  end
+
+  def process_post(user, stuff)
+    with_registered_user_service(user, stuff[:service]) do |usvc, s|
+      rv = s.post stuff[:msg], :source => 'identispy'
+      url = mk_url usvc, rv
+      success user, "Posted #{url}"
     end
   end
 

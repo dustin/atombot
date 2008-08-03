@@ -204,6 +204,14 @@ EOF
         end
       end
 
+      cmd :post, "Post to a service." do |user, arg|
+        with_arg(user, arg, "What do you want to post?") do |msg|
+          s = "identi.ca"
+          service_msg(:user => user.id, :type => :post, :service => s, :msg => msg)
+        end
+      end
+
+
       private
 
       def service_msg(msg)
