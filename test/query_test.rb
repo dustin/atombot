@@ -79,6 +79,14 @@ class QueryTest < Test::Unit::TestCase
     assert !q.matches?(%(s paint cool stuff))
   end
 
+  def test_multi_positive_and_negative_matches_and_processed_input_as_sets
+    q = Query.new 'cool stuff -paint -brush'
+    assert q.matches?(Set.new(%w(stuff thats cool matches)))
+    assert !q.matches?(Set.new(%w(is a paint brush cool stuff)))
+    assert !q.matches?(Set.new(%w(is a brush cool stuff)))
+    assert !q.matches?(Set.new(%(s paint cool stuff)))
+  end
+
   def test_positive_and_negative
     q = Query.new 'git -gregkh'
     assert q.matches?("This just talks about git.")

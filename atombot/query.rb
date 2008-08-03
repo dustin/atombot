@@ -30,6 +30,8 @@ module AtomBot
         Set.new(input.downcase.split(/\W/))
       when Array
         Set.new(input)
+      when Set
+        input
       end
       pos_str = Set.new(@positive.map{|w| w.to_s})
       neg_str = Set.new(@negative.map{|w| w.to_s})
