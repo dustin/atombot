@@ -47,7 +47,6 @@ class ServiceHandler
   end
 
   def process_setup(user, stuff)
-    puts "Processing #{stuff.inspect} for #{user.jid}"
     svc = @services[stuff[:service]]
     error user, "svc not found, known services: #{@services.keys.sort.join ', '}" and return if svc.nil?
     s = service_for(svc, stuff[:username], stuff[:password])
@@ -69,7 +68,7 @@ class ServiceHandler
     job = @beanstalk.reserve
     stuff = job.ybody
     user = resolve_user stuff[:user]
-    puts "Processing #{stuff[:type]} for #{user.jid}"
+    puts "Processing #{stuff.merge(:password => 'xxxxxxxx').inspect} for #{user.jid}"
     self.send "process_#{stuff[:type]}", user, stuff
     job.delete
   rescue StandardError, Interrupt
