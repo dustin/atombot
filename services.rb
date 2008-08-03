@@ -53,7 +53,7 @@ class ServiceHandler
     if userv
       yield userv, service_for(userv.service, userv.login, Base64.decode64(userv.password))
     else
-      error user, "You are not registered with #{svcname}"
+      error user, "You are not registered with #{svcname} (see help add_service)"
     end
   end
 

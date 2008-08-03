@@ -192,7 +192,7 @@ EOF
         send_msg user, "Tracking #{tracks.size} topics\n" + tracks.join("\n")
       end
 
-      cmd :add_service, "Add a service." do |user, arg|
+      cmd :add_service, "Add a service you can post to." do |user, arg|
         errmsg="You must supply a service name, username, and password"
         with_arg(user, arg, errmsg) do |sup|
           s, u, p = sup.strip.split(/\s+/, 3)
@@ -203,14 +203,37 @@ EOF
           end
         end
       end
+      help_text :add_service, <<-EOF
+Add a service you can post to.
 
-      cmd :post, "Post to a service." do |user, arg|
+Usage:  add_service [svcname] [username] [password]
+
+Example:  add_service identi.ca myusername m3p455w4r6
+EOF
+
+      cmd :post, "Post an update to a service." do |user, arg|
         with_arg(user, arg, "What do you want to post?") do |msg|
-          s = "identi.ca"
+          s = if /^!([A-z.]+)\s(.*)/.match msg
+            msg = $2
+            $1
+          else
+            # XXX:  Probably want to look this up per user
+            'identi.ca'
+          end
           service_msg(:user => user.id, :type => :post, :service => s, :msg => msg)
         end
       end
+      help_text :post, <<-EOF
+Post an update to a service.
 
+If your message begins with a !, this will post to the specific service,
+otherwise your default service will be used.
+
+Examples:
+post Hello, identi.ca
+post !twitter Hello, twitter.
+post !identi.ca Hello, identi.ca
+EOF
 
       private
 
