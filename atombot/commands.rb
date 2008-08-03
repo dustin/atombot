@@ -213,6 +213,7 @@ Example:  add_service identi.ca myusername m3p455w4r6
 see "help services" for a list of available services
 EOF
 
+
       cmd :services, "List all known services." do |user, arg|
         services = Hash[* Service.all.map{|s| [s.name, s]}.flatten]
         userv = Hash[* user.user_services.map{|us| [us.service.name, us]}.flatten]
@@ -229,6 +230,23 @@ EOF
         end
 
         send_msg user, out.join("\n")
+      end
+
+      cmd :remove_service, "Remove (log out of) a service." do |user, arg|
+        with_arg(user, arg, "What service do you want to remove?") do |svcname|
+          svc = Service.first(:name => svcname)
+          if svc.nil?
+            send_msg user, ":( Unknown service #{svcname}"
+          else
+            userv = user.user_services.first(:service_id => svc.id)
+            if userv.nil?
+              send_msg user, ":| You were not registered for #{svcname}"
+            else
+              userv.destroy
+              send_msg user, ":) Unregistered from #{svcname}"
+            end
+          end
+        end
       end
 
       cmd :post, "Post an update to a service." do |user, arg|
