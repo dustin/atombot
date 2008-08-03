@@ -273,6 +273,29 @@ post !twitter Hello, twitter.
 post !identi.ca Hello, identi.ca
 EOF
 
+      cmd :autopost, "Enable or disable autopost" do |user, arg|
+        with_arg(user, arg, "Use 'off' or 'on' to disable or enable autoposting") do |a|
+          newval = case arg.downcase
+          when "on"
+            true
+          when "off"
+            false
+          else
+            raise "Autopost must be set to on or off"
+          end
+          user.update_attributes(:auto_post => newval)
+          send_msg user, "Autoposting is now #{newval ? 'on' : 'off'}"
+        end
+      end
+      help_text :autopost, <<-EOF
+Autopost allows you to post by sending any unknown command.
+usage:  'autopost on' or 'autopost off'
+
+When autopost is on, any message that doesn't look like a command is posted.
+Note that the 'post' command still exists in case you want to post something
+that looks like a command.
+EOF
+
       private
 
       def service_msg(msg)

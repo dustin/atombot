@@ -11,13 +11,10 @@ class User
   property :jid, String, :nullable => false, :length => 128, :unique_index => true
   property :active, Boolean, :nullable => false, :default => true
   property :status, String
+  property :auto_post, Boolean, :default => false
 
   has n, :tracks
   has n, :user_services
-
-  def auto_post
-    false
-  end
 
   # Find or create a user and update the status
   def self.update_status(jid, status)
