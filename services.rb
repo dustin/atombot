@@ -88,10 +88,12 @@ class ServiceHandler
 
   def process_post(user, stuff)
     with_registered_user_service(user, stuff[:service]) do |usvc, s|
-      rv = s.post stuff[:msg], :source => 'identispy'
+      rv = s.post stuff[:msg][0...140], :source => 'identispy'
       url = mk_url usvc, rv
       success user, "Posted #{url}"
     end
+  rescue
+    error user, "Failed to post your message."
   end
 
   def process
