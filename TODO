@@ -1,0 +1,14 @@
+* Take message storage out of the match path.
+  This is currently in here because it's the easiest way to do it, but it's
+  blocking match processing on DB writes unnecessarily.  I need to come up with
+  a consistent computed key (e.g. md5(source + msg)) and enqueue storage jobs
+  at a low priority with these keys.
+
+* Build some kind of web frontend (merb?) that will serve up RSS.
+  * Allow track management?
+
+* Add caching to matcher.
+  It loads the whole match DB on every hit just in case it changed.  
+
+* Add caching to user lookups (by id and jid).
+  These are both done quite a bit.  No need to hit the DB all the time.
