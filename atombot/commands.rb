@@ -154,6 +154,14 @@ module AtomBot
         send_msg user, "Marked you inactive."
       end
 
+      cmd :status do |user, arg|
+        out = ["Jid:  #{user.jid}"]
+        out << "Jabber Status:  #{user.status}"
+        out << "IdentiSpy state:  #{user.active ? 'Active' : 'Not Active'}"
+        out << "You are currently tracking #{user.tracks.size} topics."
+        send_msg user, out.join("\n")
+      end
+
       cmd :track, "Track a topic" do |user, arg|
         with_arg(user, arg) do |a|
           user.track a.downcase
