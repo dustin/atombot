@@ -67,9 +67,8 @@ module AtomBot
             AtomBot::Config::CONF['admins'].each do |a|
               deliver a, "[unknown command] #{user.jid}: #{cmd} #{arg}"
             end
-            out = ["I don't understand '#{cmd}'."]
-            # out << "Send 'help' for known commands."
-            # out << "If you intended this to be posted, see 'help autopost'"
+            out << "Send 'help' for known commands."
+            out << "If you intended this to be posted, see 'help autopost'"
             send_msg user, out.join("\n")
           end
         end
