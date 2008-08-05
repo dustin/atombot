@@ -1,6 +1,9 @@
 general:
   db: postgres://username:password@someserver/atombot
 
+web:
+  atom: http://bleu.west.spy.net/ispy/atom/
+
 incoming:
   jid: your@bot/name
   pass: yourb0tp455

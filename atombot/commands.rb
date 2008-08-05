@@ -159,6 +159,7 @@ module AtomBot
         out << "Jabber Status:  #{user.status}"
         out << "IdentiSpy state:  #{user.active ? 'Active' : 'Not Active'}"
         out << "You are currently tracking #{user.tracks.size} topics."
+        out << "Your feed is currently available at #{feed_for user}"
         send_msg user, out.join("\n")
       end
 
@@ -305,6 +306,10 @@ that looks like a command.
 EOF
 
       private
+
+      def feed_for(user)
+        "#{AtomBot::Config::CONF['web']['atom']}#{user.id}"
+      end
 
       def service_msg(msg)
         beanstalk_svc = Beanstalk::Pool.new [AtomBot::Config::CONF['services']['beanstalkd']]
