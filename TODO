@@ -4,6 +4,8 @@
   a consistent computed key (e.g. md5(source + msg)) and enqueue storage jobs
   at a low priority with these keys.
 
+* Feeder ping (let the readers know new stuff has shown up).
+
 * Add caching to matcher.
   It loads the whole match DB on every hit just in case it changed.  
 
