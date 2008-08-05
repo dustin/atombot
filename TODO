@@ -4,9 +4,6 @@
   a consistent computed key (e.g. md5(source + msg)) and enqueue storage jobs
   at a low priority with these keys.
 
-* Build some kind of web frontend (merb?) that will serve up RSS.
-  * Allow track management?
-
 * Add caching to matcher.
   It loads the whole match DB on every hit just in case it changed.  
 
