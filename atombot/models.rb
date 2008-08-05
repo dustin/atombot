@@ -80,7 +80,7 @@ class Message
   property :remote_id, Integer, :nullable => false
   property :sender_name, String, :nullable => false
   property :body, String, :length => 240
-  property :atom, Text
+  property :atom, Text, :lazy => false
   property :created_at, DateTime
 
   belongs_to :service
