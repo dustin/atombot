@@ -50,7 +50,7 @@ class User
   end
 
   def unstop(word)
-    t = Track.first(:word => word, :user_id => self.id) or return false
+    t = UserGlobalFilter.first(:word => word, :user_id => self.id) or return false
     t.destroy
   end
 
