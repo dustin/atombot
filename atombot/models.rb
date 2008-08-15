@@ -15,6 +15,7 @@ class User
   property :auto_post, Boolean, :default => false
 
   has n, :tracks
+  has n, :user_global_filters
   has n, :user_services
   has n, :tracked_messages
   has n, :messages, :through => :tracked_messages
@@ -50,6 +51,15 @@ class Track
   property :id, Integer, :serial => true, :unique_index => true
   property :query, String, :nullable => false, :unique_index => :user_query
   property :user_id, Integer, :nullable => false, :unique_index => :user_query
+
+  belongs_to :user
+end
+
+class UserGlobalFilter
+  include DataMapper::Resource
+  property :id, Integer, :serial => true, :unique_index => true
+  property :user_id, Integer, :nullable => false, :unique_index => :user_query
+  property :word, String, :nullable => false, :unique_index => :user_query
 
   belongs_to :user
 end
