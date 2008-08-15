@@ -54,6 +54,10 @@ class User
     t.destroy
   end
 
+  def user_global_filters_as_s
+    user_global_filters.map{|x| "-#{x.word}"}.join(" ")
+  end
+
 end
 
 class Track
