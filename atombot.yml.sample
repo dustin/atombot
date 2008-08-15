@@ -19,7 +19,7 @@ outgoing:
   tube: laconica-services
 
 feeders:
-- update@identi.ca
+  update@identi.ca: identica
 
 admins:
 - you@example.com

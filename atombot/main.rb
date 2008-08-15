@@ -55,6 +55,7 @@ module AtomBot
     end
 
     def process_feeder_message(message)
+      source = AtomBot::Config::FEEDERS[message.from.bare.to_s]
       entry = message.first_element('entry')
       message = HTMLEntities.new.decode(entry.first_element_text('summary'))
       id = entry.first_element_text('id')
@@ -67,6 +68,7 @@ module AtomBot
 
       puts "[[[ msg from #{author}: #{message}"
       @beanstalk_in.yput({:author => author,
+        :source => source,
         :authorlink => authorlink,
         :message => message,
         :id => id,

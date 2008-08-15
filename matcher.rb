@@ -45,6 +45,7 @@ class Matcher
     load_matches
     words = Set.new(stuff[:message].downcase.split(/\W+/))
     words << "from:#{stuff[:author].downcase}"
+    words << "source:#{stuff[:source]}"
     words << "#{stuff[:author].downcase}"
     @matcher.matches(words).map { |id| Match.new(id, stuff) }
   end
