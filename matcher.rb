@@ -35,7 +35,8 @@ class Matcher
   end
 
   def load_matches
-    @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query, t.user_id]})
+    user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
+    @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
     puts "Loaded #{@matcher.size} matches"
   end
 
