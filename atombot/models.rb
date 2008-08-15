@@ -44,6 +44,16 @@ class User
     t.destroy
   end
 
+  def stop(word)
+    params = { :word => word, :user_id => self.id }
+    t = UserGlobalFilter.first(params) || UserGlobalFilter.create(params)
+  end
+
+  def unstop(word)
+    t = Track.first(:word => word, :user_id => self.id) or return false
+    t.destroy
+  end
+
 end
 
 class Track
