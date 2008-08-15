@@ -213,6 +213,17 @@ EOF
           send_msg user, "Added #{a} to the stop list"
         end
       end
+      help_text :add_stop, <<-EOF
+Add a global stop word to apply to all tracks.
+
+Usage:  add_stop [word]
+
+Examples:
+  add_stop from:annoying_guy
+  add_stop stupid
+
+See also: remove_stop
+EOF
 
       cmd :remove_stop, "Remove a stop word (global negative filter)" do |user, arg|
         with_arg(user, arg) do |a|
@@ -223,6 +234,17 @@ EOF
           end
         end
       end
+      help_text :remove_stop, <<-EOF
+Remove a global stop word.
+
+Usage:  remove_stop [word]
+
+Example:
+  remove_stop from:annoying_guy
+  remove_stop stupid
+
+See also: add_stop
+EOF
 
       cmd :add_service, "Add a service you can post to." do |user, arg|
         errmsg="You must supply a service name, username, and password"
