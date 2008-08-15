@@ -198,7 +198,30 @@ EOF
 
       cmd :tracks, "List your tracks." do |user, arg|
         tracks = user.tracks.map{|t| t.query}.sort
-        send_msg user, "Tracking #{tracks.size} topics\n" + tracks.join("\n")
+        out = ["Tracking #{tracks.size} topics"] + tracks
+        global_tracks = user.user_global_filters.map{|t| t.word}.sort
+        unless global_tracks.empty?
+          out << "\nGlobal stop words:"
+          out += global_tracks
+        end
+        send_msg user, out.join("\n")
+      end
+
+      cmd :add_stop, "Add a stop word (global negative filter)" do |user, arg|
+        with_arg(user, arg) do |a|
+          user.stop a.downcase
+          send_msg user, "Added #{a} to the stop list"
+        end
+      end
+
+      cmd :remove_stop, "Remove a stop word (global negative filter)" do |user, arg|
+        with_arg(user, arg) do |a|
+          if user.unstop a.downcase
+            send_msg user, "No longer treating #{a} as a stop word"
+          else
+            send_msg user, "Didn't stop tracking #{a} (are you sure you were tracking it?)"
+          end
+        end
       end
 
       cmd :add_service, "Add a service you can post to." do |user, arg|
