@@ -48,7 +48,7 @@ class Matcher
         cache[AtomBot::Cache::MATCH_KEY] = @matcher
       end
     end
-    printf "Loaded #{@matcher.size} matches in %.5fs\n", timing.real
+    printf "... Loaded #{@matcher.size} matches in %.5fs\n", timing.real
   end
 
   def look_for_matches(stuff)
@@ -62,7 +62,7 @@ class Matcher
   def enqueue_match(msg, match)
     message = "#{match.msg[:author]}: #{match.msg[:message]}"
     user = match.user
-    puts "Match sending to #{user.jid}"
+    puts "]]] #{user.jid}"
     $stdout.flush
     @beanstalk.yput({'to' => user.jid, 'msg' => message })
     TrackedMessage.create(:user_id => user.id, :message_id => msg.id)
@@ -80,7 +80,7 @@ class Matcher
     job = @beanstalk.reserve
     timing = Benchmark.measure do
       stuff = job.ybody
-      puts "Processing #{stuff[:message]}"
+      puts "[[[ #{stuff[:author]}: #{stuff[:message]}"
       # Need some signaling to make this not happen most of the time.
       load_matches
       matches = look_for_matches stuff
