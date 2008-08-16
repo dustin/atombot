@@ -6,8 +6,5 @@
 
 * Feeder ping (let the readers know new stuff has shown up).
 
-* Add caching to matcher.
-  It loads the whole match DB on every hit just in case it changed.  
-
 * Add caching to user lookups (by id and jid).
   These are both done quite a bit.  No need to hit the DB all the time.
