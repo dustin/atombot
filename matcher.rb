@@ -89,7 +89,7 @@ class Matcher
       job = nil
       matches.each { |match| enqueue_match msg, match }
     end
-    printf "Total processing time was %.5fs\n", timing.real
+    printf "... Total processing time was %.5fs\n", timing.real
   rescue StandardError, Interrupt
     puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
