@@ -62,7 +62,7 @@ class Matcher
   def enqueue_match(msg, match)
     message = "#{match.msg[:author]}: #{match.msg[:message]}"
     user = match.user
-    puts "Match sending to #{user.jid}: #{message}"
+    puts "Match sending to #{user.jid}"
     $stdout.flush
     @beanstalk.yput({'to' => user.jid, 'msg' => message })
     TrackedMessage.create(:user_id => user.id, :message_id => msg.id)
