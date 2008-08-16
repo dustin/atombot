@@ -24,10 +24,14 @@ module AtomBot
 
     def matches(words)
       Set.new(words.map do |w|
-        @queries[w].map do |q, t|
+        matches_for(w).map do |q, t|
           q.matches?(words) ? t : nil
         end
       end.flatten.compact)
+    end
+
+    def matches_for(w)
+      @queries[w] || []
     end
 
     def size
