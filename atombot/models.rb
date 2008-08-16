@@ -114,7 +114,7 @@ class Message
   property :sender_name, String, :nullable => false
   property :body, String, :length => 240
   property :atom, Text, :lazy => false
-  property :created_at, DateTime
+  property :created_at, DateTime, :index => true
 
   belongs_to :service
 end
@@ -123,7 +123,7 @@ class TrackedMessage
   include DataMapper::Resource
   property :id, Integer, :serial => true, :nullable => false, :unique_index => true
   property :user_id, Integer, :nullable => false, :index => true
-  property :message_id, Integer, :nullable => false
+  property :message_id, Integer, :nullable => false, :index => true
 
   belongs_to :user
   belongs_to :message
