@@ -70,15 +70,18 @@ class Matcher
 
   def process
     job = @beanstalk.reserve
-    stuff = job.ybody
-    puts "Processing #{stuff[:message]}"
-    # Need some signaling to make this not happen most of the time.
-    load_matches
-    matches = look_for_matches stuff
-    msg = store_message(stuff)
-    job.delete
-    job = nil
-    matches.each { |match| enqueue_match msg, match }
+    timing = Benchmark.measure do
+      stuff = job.ybody
+      puts "Processing #{stuff[:message]}"
+      # Need some signaling to make this not happen most of the time.
+      load_matches
+      matches = look_for_matches stuff
+      msg = store_message(stuff)
+      job.delete
+      job = nil
+      matches.each { |match| enqueue_match msg, match }
+    end
+    printf "Total processing time was %.5fs\n", timing.real
   rescue StandardError, Interrupt
     puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
