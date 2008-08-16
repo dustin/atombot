@@ -34,9 +34,7 @@ class Matcher
     @beanstalk.ignore 'default'
     @beanstalk.use AtomBot::Config::CONF['outgoing']['tube']
 
-    # Currently the only supported service.
-    @service = Service.first(:name => 'identica')
-    load_matches
+    @services = Hash[* Service.all.map{|s| [s.name, s]}.flatten]
   end
 
   def load_matches
@@ -69,11 +67,9 @@ class Matcher
   end
 
   def store_message(stuff)
-    # XXX:  Allow for more than one service.
-    # XXX:  Fix the remote IDs
-    Message.create(:service_id => @service.id, :remote_id => -1,
-      :sender_name => stuff[:author], :body => stuff[:message],
-      :atom => stuff[:atom])
+    Message.create(:service_id => @services[stuff[:source]].id,
+      :remote_id => -1, :sender_name => stuff[:author],
+      :body => stuff[:message], :atom => stuff[:atom])
   end
 
   def process
