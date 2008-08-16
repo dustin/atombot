@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+require 'benchmark'
+
 require 'rubygems'
 require 'beanstalk-client'
 
@@ -35,9 +37,11 @@ class Matcher
   end
 
   def load_matches
-    user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
-    @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
-    puts "Loaded #{@matcher.size} matches"
+    timing = Benchmark.measure do
+      user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
+      @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
+    end
+    printf "Loaded #{@matcher.size} matches in %.5fs\n", timing.real
   end
 
   def look_for_matches(stuff)
