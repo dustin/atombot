@@ -9,6 +9,7 @@ require 'atombot/config'
 require 'atombot/models'
 require 'atombot/query'
 require 'atombot/multimatch'
+require 'atombot/cache'
 
 class Match
   attr_reader :uid, :msg
@@ -25,6 +26,8 @@ end
 
 class Matcher
 
+  include AtomBot::Cache
+
   def initialize
     @beanstalk = Beanstalk::Pool.new [AtomBot::Config::CONF['incoming']['beanstalkd']]
     @beanstalk.watch AtomBot::Config::CONF['incoming']['tube']
@@ -33,12 +36,17 @@ class Matcher
 
     # Currently the only supported service.
     @service = Service.first(:name => 'identica')
+    load_matches
   end
 
   def load_matches
     timing = Benchmark.measure do
-      user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
-      @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
+      @matcher = cache[AtomBot::Cache::MATCH_KEY]
+      if @matcher.nil?
+        user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
+        @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
+        cache[AtomBot::Cache::MATCH_KEY] = @matcher
+      end
     end
     printf "Loaded #{@matcher.size} matches in %.5fs\n", timing.real
   end

@@ -5,8 +5,10 @@ require 'dm-aggregates'
 require 'dm-timestamps'
 
 require 'atombot/query'
+require 'atombot/cache'
 
 class User
+  include AtomBot::Cache
   include DataMapper::Resource
   property :id, Integer, :serial => true, :unique_index => true
   property :jid, String, :nullable => false, :length => 128, :unique_index => true
@@ -37,27 +39,34 @@ class User
     AtomBot::Query.new query
     params = { :query => query, :user_id => self.id }
     t = Track.first(params) || Track.create(params)
+    invalidate_match_cache
   end
 
   def untrack(query)
     t = Track.first(:query => query, :user_id => self.id) or return false
     t.destroy
+    invalidate_match_cache
   end
 
   def stop(word)
     params = { :word => word, :user_id => self.id }
     t = UserGlobalFilter.first(params) || UserGlobalFilter.create(params)
+    invalidate_match_cache
   end
 
   def unstop(word)
     t = UserGlobalFilter.first(:word => word, :user_id => self.id) or return false
     t.destroy
+    invalidate_match_cache
   end
 
   def user_global_filters_as_s
     user_global_filters.map{|x| "-#{x.word}"}.join(" ")
   end
 
+  def invalidate_match_cache
+    cache.delete AtomBot::Cache::MATCH_KEY
+  end
 end
 
 class Track

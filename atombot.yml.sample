@@ -1,5 +1,7 @@
 general:
   db: postgres://username:password@someserver/atombot
+  memcache: your-memcache-server:11211
+  cache_namespace: atombot
 
 web:
   atom: http://bleu.west.spy.net/ispy/atom/

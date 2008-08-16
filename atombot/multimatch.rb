@@ -7,15 +7,19 @@ module AtomBot
     # Receives a list of pairs [query, something] and returns the somethings
     # for the queries on match hit
     def initialize(queries_and_targets)
-      @queries = Hash.new {|h,k| h[k] = []; h[k]}
+      queries = Hash.new {|h,k| h[k] = []; h[k]}
 
       queries_and_targets.each do |query, target|
         q = AtomBot::Query.new query
         value = [q, target]
         q.positive.each do |word|
-          @queries[word.to_s] << value
+          queries[word.to_s] << value
         end
       end
+
+      # Copy this thing to a plain hash (no default) after building.
+      @queries = {}
+      queries.each {|k,v| @queries[k] = v}
     end
 
     def matches(words)
