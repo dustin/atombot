@@ -31,7 +31,6 @@ class Matcher
     @beanstalk.ignore 'default'
     @beanstalk.use AtomBot::Config::CONF['outgoing']['tube']
 
-    load_matches
     # Currently the only supported service.
     @service = Service.first(:name => 'identica')
   end
@@ -45,8 +44,6 @@ class Matcher
   end
 
   def look_for_matches(stuff)
-    # Need some signaling to make this not happen most of the time.
-    load_matches
     words = Set.new(stuff[:message].downcase.split(/\W+/))
     words << "from:#{stuff[:author].downcase}"
     words << "source:#{stuff[:source]}"
@@ -75,6 +72,8 @@ class Matcher
     job = @beanstalk.reserve
     stuff = job.ybody
     puts "Processing #{stuff[:message]}"
+    # Need some signaling to make this not happen most of the time.
+    load_matches
     matches = look_for_matches stuff
     msg = store_message(stuff)
     job.delete
