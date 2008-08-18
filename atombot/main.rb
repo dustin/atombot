@@ -53,7 +53,7 @@ module AtomBot
     def process_outgoing(job)
       stuff = job.ybody
       puts "]]] outgoing message to #{stuff['to']}"
-      if stuff['message']
+      if stuff[:message]
         deliver stuff['to'], format_track_msg(stuff)
       else
         deliver stuff['to'], stuff['msg']

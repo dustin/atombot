@@ -61,7 +61,7 @@ module AtomBot
     end
 
     def format_track_msg(stuff)
-      form_msg(stuff['service'], stuff['to'], stuff['author'], stuff['message'])
+      format_msg(stuff[:service], stuff[:to], stuff[:author], stuff[:message])
     end
   end
 
