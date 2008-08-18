@@ -4,12 +4,14 @@ require 'xmpp4r/roster'
 require 'atombot/config'
 require 'atombot/models'
 require 'atombot/commands'
+require 'atombot/msg_formatter'
 require 'atombot/delivery_helper'
 
 module AtomBot
 
   class Main
 
+    include AtomBot::MsgFormatter
     include AtomBot::DeliveryHelper
 
     def initialize
@@ -51,7 +53,11 @@ module AtomBot
     def process_outgoing(job)
       stuff = job.ybody
       puts "]]] outgoing message to #{stuff['to']}"
-      deliver stuff['to'], stuff['msg']
+      if stuff['message']
+        deliver stuff['to'], format_track_msg(stuff)
+      else
+        deliver stuff['to'], stuff['msg']
+      end
     end
 
     def process_feeder_message(message)

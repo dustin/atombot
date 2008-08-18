@@ -62,7 +62,7 @@ class Matcher
     user = match.user
     puts "]]] #{user.jid}"
     $stdout.flush
-    @beanstalk.yput({'to' => user.jid, 'msg' => message })
+    @beanstalk.yput(match.msg.merge({'to' => user.jid}))
     TrackedMessage.create(:user_id => user.id, :message_id => msg.id)
   end
 
