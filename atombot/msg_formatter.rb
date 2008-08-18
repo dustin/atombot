@@ -4,7 +4,7 @@ module AtomBot
 
     def user_link(user, svc)
       linktext=user
-      if user[0] == $@ # Does it start with @?
+      if user[0] == ?@ # Does it start with @?
         user = user.gsub(/^@(.*)/, '\1')
       end
       case svc
