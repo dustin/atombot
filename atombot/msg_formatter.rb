@@ -18,6 +18,20 @@ module AtomBot
       end
     end
 
+    def tag_link(tag, svc)
+      linktext=tag
+      if tag[0] == ?# # Does it start with @?
+        tag = tag.gsub(/^#(.*)/, '\1')
+      end
+      case svc
+      when 'identica'
+        %Q{<a href="http://identi.ca/tag/#{tag}">#{linktext}</a>}
+      else
+        puts "Unknown service for providing a tag link:  #{svc}"
+        linktext
+      end
+    end
+
     def type_str(type)
       type.nil? ? '' : "[#{type}] "
     end
@@ -26,9 +40,14 @@ module AtomBot
       text.gsub(/(\W*)(@[\w_]+)/) {|x| $1 + user_link($2, svc)}.gsub(/&/, '&amp;')
     end
 
+    def format_html_tags(text, svc)
+      text.gsub(/(\W*)(#[\w_]+)/) {|x| $1 + tag_link($2, svc)}.gsub(/&/, '&amp;')
+    end
+
     def format_html_body(from, text, type, svc)
       user = user_link(from, svc)
       text = format_html_users(text, svc)
+      text = format_html_tags(text, svc)
       "#{type_str(type)}#{user}: #{text}"
     end
 
