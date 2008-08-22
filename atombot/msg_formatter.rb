@@ -22,9 +22,13 @@ module AtomBot
       type.nil? ? '' : "[#{type}] "
     end
 
+    def format_html_users(text, svc)
+      text.gsub(/(\W*)(@[\w_]+)/) {|x| $1 + user_link($2, svc)}.gsub(/&/, '&amp;')
+    end
+
     def format_html_body(from, text, type, svc)
       user = user_link(from, svc)
-      text = text.gsub(/(\W*)(@[\w_]+)/) {|x| $1 + user_link($2, svc)}.gsub(/&/, '&amp;')
+      text = format_html_users(text, svc)
       "#{type_str(type)}#{user}: #{text}"
     end
 
