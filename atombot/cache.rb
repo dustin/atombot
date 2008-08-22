@@ -11,6 +11,7 @@ module AtomBot
     def init_cache
       conf = AtomBot::Config::CONF['general']
       MemCache.new([conf.fetch('memcache', 'localhost:11211')],
+        :compression => false,
         :namespace => conf.fetch('cache_namespace', 'atombot'))
     end
 
