@@ -6,8 +6,8 @@
 exec > matcher.log
 exec 2>&1
 
-ulimit -v 60000
-ulimit -m 60000
+ulimit -v 180000
+ulimit -m 180000
 
 while :
 do
