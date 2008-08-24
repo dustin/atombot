@@ -6,8 +6,8 @@
 exec > incoming.log
 exec 2>&1
 
-ulimit -v 60000
-ulimit -m 60000
+ulimit -v 80000
+ulimit -m 80000
 
 while :
 do
