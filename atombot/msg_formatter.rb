@@ -12,6 +12,8 @@ module AtomBot
         %Q{<a href="http://twitter.com/#{user}">#{linktext}</a>}
       when 'identica'
         %Q{<a href="http://identi.ca/#{user}">#{linktext}</a>}
+      when 'twitarmy'
+        %Q{<a href="http://army.twit.tv/#{user}">#{linktext}</a>}
       else
         puts "Unknown service for providing a user link:  #{svc}"
         linktext
@@ -26,6 +28,8 @@ module AtomBot
       case svc
       when 'identica'
         %Q{<a href="http://identi.ca/tag/#{tag}">#{linktext}</a>}
+      when 'twitarmy'
+        %Q{<a href="http://army.twit.tv/tag/#{tag}">#{linktext}</a>}
       else
         puts "Unknown service for providing a tag link:  #{svc}"
         linktext
