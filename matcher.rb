@@ -95,8 +95,8 @@ class Matcher
   end
 
   def run
-    1000.times { process }
-    puts "!!! Did 1000 laps, exiting."
+    100.times { process }
+    puts "!!! Did 100 laps, exiting."
   end
 
 end
