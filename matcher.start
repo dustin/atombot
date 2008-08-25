@@ -3,7 +3,7 @@
 # Shell script for running the matcher.  I'd rather use something like
 # launchd, but that's unavailable to me on my servers.
 
-exec > matcher.log
+exec > logs/matcher.$$.log
 exec 2>&1
 
 ulimit -v 180000
