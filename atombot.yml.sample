@@ -23,5 +23,8 @@ outgoing:
 feeders:
   update@identi.ca: identica
 
+ignored:
+- noisyidiot@example.com
+
 admins:
 - you@example.com

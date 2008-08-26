@@ -114,6 +114,10 @@ module AtomBot
       AtomBot::Config::FEEDERS.include? message.from.bare.to_s
     end
 
+    def ignored_sender?(message)
+      AtomBot::Config::IGNORED_JIDS.include? message.from.bare.to_s
+    end
+
     def register_callbacks
 
       @client.on_exception do |e, stream, symbol|
@@ -135,6 +139,8 @@ module AtomBot
         begin
           if message.type == :error
             puts "Error message from #{message.from.to_s}:  #{message.to_s}"
+          elsif ignored_sender? message
+            puts "Ignored message from #{message.from.to_s}"
           elsif from_a_feeder? message
             process_feeder_message message
           else

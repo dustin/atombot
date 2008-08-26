@@ -9,6 +9,7 @@ module AtomBot
     FEEDERS = CONF['feeders']
     VERSION = `git rev-parse --short HEAD`
     SCREEN_NAME = CONF['incoming']['jid']
+    IGNORED_JIDS = CONF['ignored'] || []
 
     DataMapper.setup(:default, CONF['general']['db'])
   end
