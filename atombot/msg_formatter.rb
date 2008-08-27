@@ -55,12 +55,12 @@ module AtomBot
       "[#{svc}] #{type_str(type)}#{user}: #{text}"
     end
 
-    def format_plain_body(from, text, type)
+    def format_plain_body(from, text, type, svc)
       "[#{svc}] #{type_str(type)}#{from}: #{text}"
     end
 
     def format_msg(svc, jid, from, text, subject="Track Message", type=nil)
-      body = format_plain_body(from, text, type)
+      body = format_plain_body(from, text, type, svc)
       m = Jabber::Message::new(jid, body).set_type(:chat).set_id('1').set_subject(subject)
 
       # The html itself
