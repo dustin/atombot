@@ -52,11 +52,11 @@ module AtomBot
       user = user_link(from, svc)
       text = format_html_users(text, svc)
       text = format_html_tags(text, svc)
-      "#{type_str(type)}#{user}: #{text}"
+      "[#{svc}] #{type_str(type)}#{user}: #{text}"
     end
 
     def format_plain_body(from, text, type)
-      "#{type_str(type)}#{from}: #{text}"
+      "[#{svc}] #{type_str(type)}#{from}: #{text}"
     end
 
     def format_msg(svc, jid, from, text, subject="Track Message", type=nil)
