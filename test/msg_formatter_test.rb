@@ -21,6 +21,11 @@ class QueryTest < Test::Unit::TestCase
       format_html_body("me", 'check out #thing', nil, "identica")
   end
 
+  def test_overall_format_tag_identica_plain
+    assert_equal %Q{[identica] me: check out #thing},
+      format_plain_body("me", 'check out #thing', nil, "identica")
+  end
+
   def test_user_html_twitter
     assert_equal %Q{yo, <a href="http://twitter.com/blah">@blah</a>},
       format_html_users("yo, @blah", "twitter")
