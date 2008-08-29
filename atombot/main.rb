@@ -121,7 +121,10 @@ module AtomBot
     def register_callbacks
 
       @client.on_exception do |e, stream, symbol|
-        puts "Exception in #{symbol}: #{e}" + e.backtrace.join("\n\t")
+        puts "Exception in #{symbol}: #{e.inspect}"
+        unless e.nil?
+          puts e.backtrace.join("\n\t")
+        end
         $stdout.flush
       end
 
