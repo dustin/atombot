@@ -5,10 +5,9 @@ require 'dm-aggregates'
 require 'dm-timestamps'
 
 require 'atombot/query'
-require 'atombot/cache'
+require 'atombot/jobs'
 
 class User
-  include AtomBot::Cache
   include DataMapper::Resource
   property :id, Integer, :serial => true, :unique_index => true
   property :jid, String, :nullable => false, :length => 128, :unique_index => true
@@ -65,7 +64,7 @@ class User
   end
 
   def invalidate_match_cache
-    cache.delete AtomBot::Cache::MATCH_KEY
+    AtomBot::JobAccess.new.rebuild
   end
 end
 
