@@ -213,6 +213,7 @@ EOF
           send_msg user, "Added #{a} to the stop list"
         end
       end
+      alias_method :addstop, :add_stop
       help_text :add_stop, <<-EOF
 Add a global stop word to apply to all tracks.
 
@@ -234,6 +235,7 @@ EOF
           end
         end
       end
+      alias_method :removestop, :remove_stop
       help_text :remove_stop, <<-EOF
 Remove a global stop word.
 
@@ -257,6 +259,7 @@ EOF
           end
         end
       end
+      alias_method :addservice, :add_service
       help_text :add_service, <<-EOF
 Add a service you can post to.
 
@@ -302,6 +305,7 @@ EOF
           end
         end
       end
+      alias_method :removeservice, :remove_service
 
       cmd :post, "Post an update to a service." do |user, arg|
         with_arg(user, arg, "What do you want to post?") do |msg|
@@ -341,6 +345,7 @@ EOF
           send_msg user, "Autoposting is now #{newval ? 'on' : 'off'}"
         end
       end
+      alias_method :auto_post, :autopost
       help_text :autopost, <<-EOF
 Autopost allows you to post by sending any unknown command.
 usage:  'autopost on' or 'autopost off'
