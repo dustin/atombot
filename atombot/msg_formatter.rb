@@ -59,7 +59,7 @@ module AtomBot
       "[#{svc}] #{type_str(type)}#{from}: #{text}"
     end
 
-    def format_msg(svc, jid, from, text, subject="Track Message", type=nil)
+    def format_msg(svc, jid, from, text, atom, subject="Track Message", type=nil)
       body = format_plain_body(from, text, type, svc)
       m = Jabber::Message::new(jid, body).set_type(:chat).set_id('1').set_subject(subject)
 
@@ -80,6 +80,11 @@ module AtomBot
         b.add t
         h.add b
         m.add_element(h)
+
+        # Toss in atom if we've got it
+        unless atom.blank?
+          m.add_element(REXML::Text.new(atom, false, nil, true, nil, %r/.^/ ))
+        end
       rescue REXML::ParseException
         puts "Nearly made bad html:  #{$!} (#{text})"
         $stdout.flush
@@ -89,7 +94,7 @@ module AtomBot
     end
 
     def format_track_msg(stuff)
-      format_msg(stuff[:source], stuff[:to], stuff[:author], stuff[:message])
+      format_msg(stuff[:source], stuff[:to], stuff[:author], stuff[:message], stuff[:atom])
     end
   end
 
