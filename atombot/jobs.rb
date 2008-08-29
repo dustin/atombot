@@ -25,7 +25,7 @@ module AtomBot
 
   class JobRunner < JobAccess
 
-    def process_rebuild
+    def process_rebuild(stuff)
       MultiMatch.recache_all
     end
 
