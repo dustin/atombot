@@ -47,7 +47,8 @@ module AtomBot
     end
 
     def run
-      loop { process }
+      10.times { process }
+      puts "Did my 10, will exit again."
     end
 
   end
