@@ -31,6 +31,10 @@ module AtomBot
 
     def get_deduplicated_jobs
       rv = {}
+      # Get the first job...
+      job = @beanstalk.reserve
+      rv[job.ybody] = job
+      # Now get the rest deduplicated
       loop do
         job = @beanstalk.reserve(0)
         if rv.keys.include? job.ybody
