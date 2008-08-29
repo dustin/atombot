@@ -83,7 +83,7 @@ module AtomBot
 
         # Toss in atom if we've got it
         unless atom.blank?
-          m.add_element(REXML::Text.new(atom, false, nil, true, nil, %r/.^/ ))
+          m.add(REXML::Text.new(atom, false, nil, true, nil, %r/.^/ ))
         end
       rescue REXML::ParseException
         puts "Nearly made bad html:  #{$!} (#{text})"
