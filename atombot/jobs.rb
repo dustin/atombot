@@ -14,7 +14,7 @@ module AtomBot
       @beanstalk = Beanstalk::Pool.new [AtomBot::Config::CONF['jobs']['beanstalkd']]
       @beanstalk.watch AtomBot::Config::CONF['jobs']['tube']
       @beanstalk.ignore 'default'
-      @beanstalk.use AtomBot::Config::CONF['outgoing']['tube']
+      @beanstalk.use AtomBot::Config::CONF['jobs']['tube']
     end
 
     def rebuild
