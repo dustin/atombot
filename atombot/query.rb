@@ -12,7 +12,7 @@ module AtomBot
     attr_reader :positive, :negative
 
     def initialize(query)
-      positive, negative = words = query.split.uniq.partition { |w| w[0] != DASH }
+      positive, negative = query.split.uniq.partition { |w| w[0] != DASH }
       @positive = positive.map {|w| w.to_sym}
       @negative = negative.map {|w| w.sub(/^-/, '').to_sym}
 
