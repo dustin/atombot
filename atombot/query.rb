@@ -2,7 +2,7 @@ require 'set'
 
 module AtomBot
 
-  DASH='-'[0]
+  DASH=?-
 
   class QueryParseException < StandardError
   end
