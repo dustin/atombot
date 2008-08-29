@@ -4,6 +4,11 @@ module AtomBot
 
   class MultiMatch
 
+    def self.load_all
+      user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
+      AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
+    end
+
     # Receives a list of pairs [query, something] and returns the somethings
     # for the queries on match hit
     def initialize(queries_and_targets)

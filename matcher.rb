@@ -41,8 +41,7 @@ class Matcher
     timing = Benchmark.measure do
       @matcher = cache[AtomBot::Cache::MATCH_KEY]
       if @matcher.nil?
-        user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
-        @matcher = AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
+        @matcher = AtomBot::MultiMatch.load_all
         cache[AtomBot::Cache::MATCH_KEY] = @matcher
       end
     end
