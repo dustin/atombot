@@ -19,6 +19,16 @@ module AtomBot
       @cache ||= init_cache
     end
 
+    def get_version_num(name='version')
+      cache.add(name, "0")
+      cache.incr(name, 0)
+    end
+
+    def new_version_num(name='version')
+      cache.add(name, "0")
+      cache.incr(name)
+    end
+
   end
 
   class CacheInterface

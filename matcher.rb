@@ -9,6 +9,8 @@ require 'atombot/config'
 require 'atombot/models'
 require 'atombot/query'
 require 'atombot/multimatch'
+require 'atombot/cache'
+
 
 class Match
   attr_reader :uid, :msg
@@ -36,7 +38,12 @@ class Matcher
 
   def load_matches
     timing = Benchmark.measure do
-      @matcher = AtomBot::MultiMatch.all
+      v = AtomBot::CacheInterface.new.get_version_num
+      myver = @matcher.nil? ? -1 : @matcher.version
+      if myver != v
+        puts "Reloading from cache (my version is #{myver}, latest is #{v})"
+        @matcher = AtomBot::MultiMatch.all
+      end
     end
     printf "... Loaded #{@matcher.size} matches in %.5fs\n", timing.real
   end

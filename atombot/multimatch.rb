@@ -5,6 +5,8 @@ module AtomBot
 
   class MultiMatch
 
+    attr_reader :version
+
     def self.load_all
       user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
       AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
@@ -29,6 +31,7 @@ module AtomBot
     # for the queries on match hit
     def initialize(queries_and_targets)
       @queries = {}
+      @version = CacheInterface.new.new_version_num
 
       queries_and_targets.each do |query, target|
         q = AtomBot::Query.new query
