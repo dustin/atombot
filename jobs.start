@@ -1,0 +1,16 @@
+#!/bin/sh
+#
+# Shell script for running the jobs.  I'd rather use something like
+# launchd, but that's unavailable to me on my servers.
+
+exec > logs/jobs.log
+exec 2>&1
+
+ulimit -v 180000
+ulimit -m 180000
+
+while :
+do
+	ruby jobs.rb
+	sleep 5
+done

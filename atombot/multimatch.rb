@@ -20,6 +20,11 @@ module AtomBot
       matcher
     end
 
+    def self.recache_all
+      c = CacheInterface.new
+      c.cache[AtomBot::Cache::MATCH_KEY] = load_all
+    end
+
     # Receives a list of pairs [query, something] and returns the somethings
     # for the queries on match hit
     def initialize(queries_and_targets)
