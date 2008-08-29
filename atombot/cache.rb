@@ -20,4 +20,8 @@ module AtomBot
     end
 
   end
+
+  class CacheInterface
+    include Cache
+  end
 end

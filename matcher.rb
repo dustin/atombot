@@ -9,7 +9,6 @@ require 'atombot/config'
 require 'atombot/models'
 require 'atombot/query'
 require 'atombot/multimatch'
-require 'atombot/cache'
 
 class Match
   attr_reader :uid, :msg
@@ -26,8 +25,6 @@ end
 
 class Matcher
 
-  include AtomBot::Cache
-
   def initialize
     @beanstalk = Beanstalk::Pool.new [AtomBot::Config::CONF['incoming']['beanstalkd']]
     @beanstalk.watch AtomBot::Config::CONF['incoming']['tube']
@@ -39,11 +36,7 @@ class Matcher
 
   def load_matches
     timing = Benchmark.measure do
-      @matcher = cache[AtomBot::Cache::MATCH_KEY]
-      if @matcher.nil?
-        @matcher = AtomBot::MultiMatch.load_all
-        cache[AtomBot::Cache::MATCH_KEY] = @matcher
-      end
+      @matcher = AtomBot::MultiMatch.all
     end
     printf "... Loaded #{@matcher.size} matches in %.5fs\n", timing.real
   end

@@ -1,4 +1,5 @@
 require 'atombot/query'
+require 'atombot/cache'
 
 module AtomBot
 
@@ -7,6 +8,16 @@ module AtomBot
     def self.load_all
       user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
       AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
+    end
+
+    def self.all
+      c = CacheInterface.new
+      matcher = c.cache[AtomBot::Cache::MATCH_KEY]
+      if matcher.nil?
+        matcher = load_all
+        c.cache[AtomBot::Cache::MATCH_KEY] = matcher
+      end
+      matcher
     end
 
     # Receives a list of pairs [query, something] and returns the somethings
