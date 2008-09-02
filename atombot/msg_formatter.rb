@@ -15,7 +15,7 @@ module AtomBot
       when 'twitarmy'
         %Q{<a href="http://army.twit.tv/#{user}">#{linktext}</a>}
       else
-        puts "Unknown service for providing a user link:  #{svc}"
+        $logger.info "Unknown service for providing a user link:  #{svc}"
         linktext
       end
     end
@@ -31,7 +31,7 @@ module AtomBot
       when 'twitarmy'
         %Q{<a href="http://army.twit.tv/tag/#{tag}">#{linktext}</a>}
       else
-        puts "Unknown service for providing a tag link:  #{svc}"
+        $logger.info "Unknown service for providing a tag link:  #{svc}"
         linktext
       end
     end
@@ -86,7 +86,7 @@ module AtomBot
           m.add(REXML::Text.new(atom, false, nil, true, nil, %r/.^/ ))
         end
       rescue REXML::ParseException
-        puts "Nearly made bad html:  #{$!} (#{text})"
+        $logger.info "Nearly made bad html:  #{$!} (#{text})"
         $stdout.flush
       end
 

@@ -36,7 +36,7 @@ require 'atombot/main'
 # </message>
 
 loop do
-  puts "Connecting..."
+  $logger.info "Connecting..."
   $stdout.flush
 
   # Jabber::debug=true

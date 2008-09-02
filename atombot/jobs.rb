@@ -38,7 +38,7 @@ module AtomBot
       100.times do
         job = @beanstalk.reserve(0)
         if rv.keys.include? job.ybody
-          puts "Removing duplicate job:  #{job.ybody[:type]}"
+          $logger.info "Removing duplicate job:  #{job.ybody[:type]}"
           job.delete
         else
           rv[job.ybody] = job
@@ -57,7 +57,7 @@ module AtomBot
       job.delete
       job = nil
     rescue StandardError, Interrupt
-      puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
+      $logger.info "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
       sleep 1
     ensure
       job.decay unless job.nil?

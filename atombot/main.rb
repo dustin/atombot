@@ -52,7 +52,7 @@ module AtomBot
 
     def process_outgoing(job)
       stuff = job.ybody
-      puts "]]] outgoing message to #{stuff['to']}"
+      $logger.info "]]] outgoing message to #{stuff['to']}"
       if stuff[:message]
         deliver stuff['to'], format_track_msg(stuff)
       else
@@ -72,7 +72,7 @@ module AtomBot
       # Strip off the author's name from the message
       message.gsub!(Regexp.new("^#{author}: "), '')
 
-      puts "[[[ msg from #{author}: #{message}"
+      $logger.info "[[[ msg from #{author}: #{message}"
       @beanstalk_in.yput({:author => author,
         :source => source,
         :authorlink => authorlink,
@@ -81,7 +81,7 @@ module AtomBot
         :atom => entry.to_s
         })
     rescue StandardError, Interrupt
-      puts "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t")
+      $logger.info "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t")
     end
 
     def subscribe_to_unknown
@@ -90,7 +90,7 @@ module AtomBot
     end
 
     def subscribe_to(jid)
-      puts "Sending subscription request to #{jid}"
+      $logger.info "Sending subscription request to #{jid}"
       req = Jabber::Presence.new.set_type(:subscribe)
       req.to = jid
       @client.send req
@@ -99,14 +99,14 @@ module AtomBot
     def process_user_message(msg)
       return if msg.body.nil?
       decoded = HTMLEntities.new.decode(msg.body).gsub(/&/, '&amp;')
-      puts "<<< User message from #{msg.from.to_s}:  #{decoded}"
+      $logger.info "<<< User message from #{msg.from.to_s}:  #{decoded}"
       cmd, args = decoded.split(' ', 2)
       cp = AtomBot::Commands::CommandProcessor.new @client
       user = User.first(:jid => msg.from.bare.to_s) || User.create(:jid => msg.from.bare.to_s)
       cp.dispatch cmd.downcase, user, args
       update_status
     rescue StandardError, Interrupt
-      puts "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
+      $logger.info "Error processing user message:  #{$!}" + $!.backtrace.join("\n\t")
       deliver msg.from.bare.to_s, "Error processing your message (#{$!})"
     end
 
@@ -121,9 +121,9 @@ module AtomBot
     def register_callbacks
 
       @client.on_exception do |e, stream, symbol|
-        puts "Exception in #{symbol}: #{e.inspect}"
+        $logger.info "Exception in #{symbol}: #{e.inspect}"
         unless e.nil?
-          puts e.backtrace.join("\n\t")
+          $logger.info e.backtrace.join("\n\t")
         end
         $stdout.flush
       end
@@ -141,9 +141,9 @@ module AtomBot
       @client.add_message_callback do |message|
         begin
           if message.type == :error
-            puts "Error message from #{message.from.to_s}:  #{message.to_s}"
+            $logger.info "Error message from #{message.from.to_s}:  #{message.to_s}"
           elsif ignored_sender? message
-            puts "Ignored message from #{message.from.to_s}"
+            $logger.info "Ignored message from #{message.from.to_s}"
           elsif from_a_feeder? message
             process_feeder_message message
           else
@@ -151,7 +151,7 @@ module AtomBot
           end
           $stdout.flush
         rescue StandardError, Interrupt
-          puts "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
+          $logger.info "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
           $stdout.flush
         end
       end
@@ -162,7 +162,7 @@ module AtomBot
         else
           presence.type
         end
-        puts "*** #{presence.from} -> #{status}"
+        $logger.info "*** #{presence.from} -> #{status}"
         $stdout.flush
         User.update_status presence.from.bare.to_s, status.to_s
       end
@@ -176,13 +176,13 @@ module AtomBot
         job.delete
       end
     rescue StandardError, Interrupt
-      puts "Got exception:  #{$!.inspect}\n" + $!.backtrace.join("\n\t")
+      $logger.info "Got exception:  #{$!.inspect}\n" + $!.backtrace.join("\n\t")
       $stdout.flush
       sleep 5
     end
 
     def run
-      puts "Processing..."
+      $logger.info "Processing..."
       $stdout.flush
       loop { inner_loop }
     end

@@ -3,6 +3,8 @@ gem 'dm-core'
 require 'dm-core'
 require 'yaml'
 
+require 'atombot/logging'
+
 module AtomBot
   module Config
     CONF = ::YAML.load_file 'atombot.yml'

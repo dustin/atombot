@@ -22,7 +22,7 @@ class ServiceHandler
 
   def load_services
     @services = Hash[* Service.all.map{|s| [s.name, s]}.flatten]
-    puts "Loaded #{@services.size} services."
+    $logger.info "Loaded #{@services.size} services."
   end
 
   def send_response(jid, message)
@@ -42,7 +42,7 @@ class ServiceHandler
   end
 
   def service_for(svc, username, password)
-    puts "Getting a service for #{username}: #{svc.inspect}"
+    $logger.info "Getting a service for #{username}: #{svc.inspect}"
     Twitter::Base.new username, password, svc.hostname, svc.api_path
   end
 
@@ -81,7 +81,7 @@ class ServiceHandler
       us.save
       success user, "Registered for #{svc.name}"
     rescue StandardError, Interrupt
-      puts "#{$!}" + $!.backtrace.join("\n\t")
+      $logger.info "#{$!}" + $!.backtrace.join("\n\t")
       error user, "Failed to register for #{svc.name} - check your password and stuff"
     end
   end
@@ -100,12 +100,12 @@ class ServiceHandler
     job = @beanstalk.reserve
     stuff = job.ybody
     user = resolve_user stuff[:user]
-    puts "Processing #{stuff.merge(:password => 'xxxxxxxx').inspect} for #{user.jid}"
+    $logger.info "Processing #{stuff.merge(:password => 'xxxxxxxx').inspect} for #{user.jid}"
     self.send "process_#{stuff[:type]}", user, stuff
     job.delete
     job = nil
   rescue StandardError, Interrupt
-    puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
+    $logger.info "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
   ensure
     job.decay unless job.nil?

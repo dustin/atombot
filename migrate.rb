@@ -3,5 +3,5 @@
 require 'atombot/config'
 require 'atombot/models'
 
-puts "Migrating..."
+$logger.info "Migrating..."
 DataMapper.auto_migrate!

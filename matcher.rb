@@ -41,7 +41,7 @@ class Matcher
       v = AtomBot::CacheInterface.new.get_version_num
       myver = @matcher.nil? ? -1 : @matcher.version
       if myver != v
-        puts "Reloading from cache (my version is #{myver}, latest is #{v})"
+        $logger.info "Reloading from cache (my version is #{myver}, latest is #{v})"
         @matcher = AtomBot::MultiMatch.all
       end
     end
@@ -59,7 +59,7 @@ class Matcher
   def enqueue_match(msg, match)
     message = "#{match.msg[:author]}: #{match.msg[:message]}"
     user = match.user
-    puts "]]] #{user.jid}"
+    $logger.info "]]] #{user.jid}"
     $stdout.flush
     @beanstalk.yput(match.msg.merge({'to' => user.jid}))
     TrackedMessage.create(:user_id => user.id, :message_id => msg.id)
@@ -75,7 +75,7 @@ class Matcher
     job = @beanstalk.reserve
     timing = Benchmark.measure do
       stuff = job.ybody
-      puts "[[[ #{stuff[:author]}: #{stuff[:message]}"
+      $logger.info "[[[ #{stuff[:author]}: #{stuff[:message]}"
       # Need some signaling to make this not happen most of the time.
       load_matches
       matches = look_for_matches stuff
@@ -86,7 +86,7 @@ class Matcher
     end
     printf "... Total processing time was %.5fs\n", timing.real
   rescue StandardError, Interrupt
-    puts "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
+    $logger.info "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
   ensure
     job.decay unless job.nil?
@@ -95,7 +95,7 @@ class Matcher
 
   def run
     20.times { process }
-    puts "!!! Did 20 laps, exiting."
+    $logger.info "!!! Did 20 laps, exiting."
   end
 
 end
