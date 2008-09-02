@@ -1,10 +1,20 @@
 require "test/unit"
 
+require "atombot/models"
 require "atombot/msg_formatter"
 
 class QueryTest < Test::Unit::TestCase
 
   include AtomBot::MsgFormatter
+
+  def setup
+    @services={}
+    @services['twitter'] = ::Service.new(:name => 'twitter',
+      :user_pattern => %q{<a href="http://twitter.com/#{user}">#{linktext}</a>})
+    @services['identica'] = ::Service.new(:name => 'identica',
+      :user_pattern => %q{<a href="http://identi.ca/#{user}">#{linktext}</a>},
+      :tag_pattern => %q{<a href="http://identi.ca/tag/#{tag}">#{linktext}</a>})
+  end
 
   def test_overall_htmlification_username
     assert_equal %Q{[twitter] <a href="http://twitter.com/me">me</a>: yo, <a href="http://twitter.com/blah">@blah</a>},

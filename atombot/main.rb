@@ -22,6 +22,8 @@ module AtomBot
       @beanstalk_in = Beanstalk::Pool.new [AtomBot::Config::CONF['incoming']['beanstalkd']]
       @beanstalk_in.use AtomBot::Config::CONF['incoming']['tube']
 
+      @services = Hash[* Service.all(:jid.not => nil).map{|s| [s.jid, s]}.flatten]
+
       jid = Jabber::JID.new(AtomBot::Config::CONF['incoming']['jid'])
       @client = Jabber::Client.new(jid)
       @client.connect
@@ -111,7 +113,7 @@ module AtomBot
     end
 
     def from_a_feeder?(message)
-      AtomBot::Config::FEEDERS.include? message.from.bare.to_s
+      @services.include? message.from.bare.to_s
     end
 
     def ignored_sender?(message)

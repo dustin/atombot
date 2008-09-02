@@ -2,22 +2,18 @@ module AtomBot
 
   module MsgFormatter
 
+    def services
+      @fmt_services ||= Hash[* Service.all.map{|s| [s.name, s]}.flatten]
+    end
+
     def user_link(user, svc)
       linktext=user
       if user[0] == ?@ # Does it start with @?
         user = user.gsub(/^@(.*)/, '\1')
       end
-      case svc
-      when 'twitter'
-        %Q{<a href="http://twitter.com/#{user}">#{linktext}</a>}
-      when 'identica'
-        %Q{<a href="http://identi.ca/#{user}">#{linktext}</a>}
-      when 'twitarmy'
-        %Q{<a href="http://army.twit.tv/#{user}">#{linktext}</a>}
-      else
-        $logger.info "Unknown service for providing a user link:  #{svc}"
-        linktext
-      end
+      s = services[svc]
+      $logger.info "Could not find #{svc} from #{services.keys.inspect}" if s.nil?
+      s.nil? ? linktext : s.link_user(user, linktext)
     end
 
     def tag_link(tag, svc)
@@ -25,15 +21,9 @@ module AtomBot
       if tag[0] == ?# # Does it start with @?
         tag = tag.gsub(/^#(.*)/, '\1')
       end
-      case svc
-      when 'identica'
-        %Q{<a href="http://identi.ca/tag/#{tag}">#{linktext}</a>}
-      when 'twitarmy'
-        %Q{<a href="http://army.twit.tv/tag/#{tag}">#{linktext}</a>}
-      else
-        $logger.info "Unknown service for providing a tag link:  #{svc}"
-        linktext
-      end
+      s = services[svc]
+      $logger.info "Could not find #{svc} from #{services.keys.inspect}" if s.nil?
+      s.nil? ? linktext : s.link_tag(tag, linktext)
     end
 
     def type_str(type)

@@ -92,6 +92,28 @@ class Service
   property :name, String, :nullable => false, :unique_index => true
   property :hostname, String, :nullable => false
   property :api_path, String, :nullable => false
+  # Incoming jid -- if not null, this is used to recognize services
+  property :jid, String, :nullable => true, :length => 128
+  # Patterns for formatting outgoing messages
+  property :user_pattern, String, :nullable => true, :length => 128
+  property :tag_pattern, String, :nullable => true, :length => 128
+
+  def link_user(user, linktext)
+    if user_pattern
+      eval '%Q{' + user_pattern + '}'
+    else
+      linktext
+    end
+  end
+
+  def link_tag(tag, linktext)
+    if tag_pattern
+      eval '%Q{' + tag_pattern + '}'
+    else
+      linktext
+    end
+  end
+
 end
 
 class UserService
