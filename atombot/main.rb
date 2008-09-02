@@ -74,7 +74,7 @@ module AtomBot
       # Strip off the author's name from the message
       message.gsub!(Regexp.new("^#{author}: "), '')
 
-      $logger.info "[[[ msg from #{author}: #{message}"
+      $logger.info "[[[ msg from [#{source}] #{author}: #{message}"
       @beanstalk_in.yput({:author => author,
         :source => source,
         :authorlink => authorlink,
