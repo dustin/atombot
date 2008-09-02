@@ -114,6 +114,7 @@ class ServiceHandler
     sleep 1
   ensure
     job.decay unless job.nil?
+    $logger.info "Completed task for #{user.jid}"
     $stdout.flush
   end
 
