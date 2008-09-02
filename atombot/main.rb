@@ -63,7 +63,7 @@ module AtomBot
     end
 
     def process_feeder_message(message)
-      source = AtomBot::Config::FEEDERS[message.from.bare.to_s]
+      source = @services[message.from.bare.to_s].name
       entry = message.first_element('entry')
       message = HTMLEntities.new.decode(entry.first_element_text('summary'))
       id = entry.first_element_text('id')
