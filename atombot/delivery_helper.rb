@@ -13,7 +13,7 @@ module AtomBot
     def deliver(recip, message, type=:chat)
       u = resolve_user(recip)
       if u.nil? || !u.ready_to_receive_message
-        $logger.info "... Suppressing send to #{u.nil? ? recip : u.jid}"
+        $logger.info "... suppressing msg to #{u.nil? ? recip : u.jid}"
         false
       else
         deliver_without_suppression(u, message, type)

@@ -54,7 +54,7 @@ module AtomBot
 
     def process_outgoing(job)
       stuff = job.ybody
-      $logger.info "]]] outgoing message to #{stuff['to']}"
+      $logger.info "]]] #{stuff['to']}"
       if stuff[:message]
         deliver stuff['to'], format_track_msg(stuff)
       else
