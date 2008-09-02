@@ -26,7 +26,7 @@ class ServiceHandler
   end
 
   def send_response(jid, message)
-    @beanstalk.yput({'to' => jid, 'msg' => message })
+    @beanstalk.yput({'to' => jid, 'msg' => message }, 512)
   end
 
   def resolve_user(uid)
