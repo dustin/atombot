@@ -97,6 +97,7 @@ class Service
   # Patterns for formatting outgoing messages
   property :user_pattern, String, :nullable => true, :length => 128
   property :tag_pattern, String, :nullable => true, :length => 128
+  property :listed, Boolean, :nullable => false, :default => true
 
   def link_user(user, linktext)
     if user_pattern

@@ -272,7 +272,7 @@ EOF
 
 
       cmd :services, "List all known services." do |user, arg|
-        services = Hash[* Service.all.map{|s| [s.name, s]}.flatten]
+        services = Hash[* Service.all(:listed => true).map{|s| [s.name, s]}.flatten]
         userv = Hash[* user.user_services.map{|us| [us.service.name, us]}.flatten]
         userv.keys.each {|k| services.delete k}
 
