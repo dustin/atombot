@@ -14,12 +14,14 @@ class User
   property :active, Boolean, :nullable => false, :default => true
   property :status, String
   property :auto_post, Boolean, :default => false
+  property :default_service_id, Integer, :nullable => true
 
   has n, :tracks
   has n, :user_global_filters
   has n, :user_services
   has n, :tracked_messages
   has n, :messages, :through => :tracked_messages
+  belongs_to :default_service, :class_name => "Service", :child_key => [:default_service_id]
 
   # Find or create a user and update the status
   def self.update_status(jid, status)

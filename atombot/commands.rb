@@ -160,6 +160,9 @@ module AtomBot
         out << "IdentiSpy state:  #{user.active ? 'Active' : 'Not Active'}"
         out << "You are currently tracking #{user.tracks.size} topics."
         out << "Your feed is currently available at #{feed_for user}"
+        unless user.default_service_id.nil?
+          out << "Default posting service:  #{user.default_service.name}"
+        end
         send_msg user, out.join("\n")
       end
 
@@ -270,6 +273,27 @@ Example:  add_service identica myusername m3p455w4r6
 see "services" for a list of available services
 EOF
 
+      cmd :set_default_service, "Set your default posting service." do |user, arg|
+        errmsg="You must specify the default service name."
+        with_arg(user, arg, "You must specify the default service name.") do |sname|
+          s = Service.first(:name => sname) || raise("No such service: #{sname}")
+          user.default_service_id = s.id
+          user.save
+          send_msg user, ":) Your default service has been set."
+        end
+      end
+      alias_method :setdefaultservice, :set_default_service
+      alias_method :set_defaultservice, :set_default_service
+      alias_method :set_defaultservice, :set_default_service
+      help_text :set_default_service, <<-EOF
+Set your default posting services for posts.
+
+Usage: set_default_service [service_name]
+
+Example: set_default_service twitter
+
+see "services" for a list of available services
+EOF
 
       cmd :services, "List all known services." do |user, arg|
         services = Hash[* Service.all(:listed => true).map{|s| [s.name, s]}.flatten]
@@ -313,8 +337,7 @@ EOF
             msg = $2
             $1
           else
-            # XXX:  Probably want to look this up per user
-            'identica'
+            user.default_service.name
           end
           service_msg(:user => user.id, :type => :post, :service => s, :msg => msg)
         end

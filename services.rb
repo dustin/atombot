@@ -79,6 +79,11 @@ class ServiceHandler
       us.login = stuff[:username]
       us.password = Base64.encode64(stuff[:password]).strip
       us.save
+
+      if user.default_service_id.nil?
+        user.default_service_id = svc.id
+        user.save
+      end
       success user, "Registered for #{svc.name}"
     rescue StandardError, Interrupt
       $logger.info "#{$!}" + $!.backtrace.join("\n\t")
