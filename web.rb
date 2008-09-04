@@ -57,6 +57,7 @@ post '/submit' do
         :source => source,
         :authorlink => authorlink,
         :message => message,
-        :id => id
+        :id => id,
+        :atom => entry.to_s
         })
 end
