@@ -1,12 +1,18 @@
 #!/usr/bin/env ruby
 
+require 'atombot/config'
+require 'atombot/models'
+require 'beanstalk-client'
 require 'date'
-
+require 'htmlentities'
+require 'rexml/document'
 require 'rubygems'
 require 'sinatra'
 
-require 'atombot/config'
-require 'atombot/models'
+include REXML
+
+beanstalk_in = Beanstalk::Pool.new [AtomBot::Config::CONF['incoming']['beanstalkd']]
+beanstalk_in.use AtomBot::Config::CONF['incoming']['tube']
 
 def atom_date(d=DateTime.now)
   d.strftime "%Y-%m-%dT%H:%M:%SZ"
@@ -34,4 +40,23 @@ EOF
   end
   out << "</feed>"
   out
+end
+
+post '/submit' do
+    msg = Document.new(params[:msg])
+    entry = msg.elements["//entry"]
+    message = HTMLEntities.new.decode(entry.elements["//summary"].text)
+    id = entry.elements["//id"].text
+    author = entry.elements["//source/author/name"].text
+    authorlink = entry.elements["//source/link"].text
+    source = entry.elements["//apisource"].text
+
+    message.gsub!(Regexp.new("^#{author}: "), '')
+
+    beanstalk_in.yput({:author => author,
+        :source => source,
+        :authorlink => authorlink,
+        :message => message,
+        :id => id
+        })
 end
