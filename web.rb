@@ -42,7 +42,7 @@ EOF
   out
 end
 
-post '/submit' do
+post '/submit/:apikey' do
     msg = Document.new(params[:msg])
     entry = msg.elements["//entry"]
     message = HTMLEntities.new.decode(entry.elements["//summary"].text)
