@@ -212,6 +212,7 @@ EOF
 
       cmd :add_stop, "Add a stop word (global negative filter)" do |user, arg|
         with_arg(user, arg) do |a|
+          raise "You can't have spaces in a stop word (currently)" if /\s/ === arg
           user.stop a.downcase
           send_msg user, "Added #{a} to the stop list"
         end
