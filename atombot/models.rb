@@ -100,6 +100,7 @@ class Service
   property :user_pattern, String, :nullable => true, :length => 128
   property :tag_pattern, String, :nullable => true, :length => 128
   property :listed, Boolean, :nullable => false, :default => true
+  property :api_key, String, :length => 64, :nullable => true, :unique_index => true
 
   def link_user(user, linktext)
     if user_pattern

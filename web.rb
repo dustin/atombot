@@ -43,18 +43,21 @@ EOF
 end
 
 post '/submit/:apikey' do
+
+  service = Service.first(:api_key => params[:apikey])
+  raise Sinatra::NotFound.new if service.nil?
+
   msg = Document.new(params[:msg])
   entry = msg.elements["//entry"]
   message = HTMLEntities.new.decode(entry.elements["//summary"].text)
   id = entry.elements["//id"].text
   author = entry.elements["//source/author/name"].text
   authorlink = entry.elements["//source/link"].text
-  source = entry.elements["//apisource"].text
 
   message.gsub!(Regexp.new("^#{author}: "), '')
 
   beanstalk_in.yput({:author => author,
-    :source => source,
+    :source => service.name,
     :authorlink => authorlink,
     :message => message,
     :id => id,
