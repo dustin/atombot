@@ -56,6 +56,11 @@ class QueryTest < Test::Unit::TestCase
       format_html_tags("check out #BlaH", "identica")
   end
 
+  def test_tag_with_dots_html_identica
+    assert_equal %Q{check out <a href="http://identi.ca/tag/djangofi">#django.fi</a>},
+      format_html_tags("check out #django.fi", "identica")
+  end
+
   def test_tag_html_twitter
     assert_equal %Q{check out #blah},
       format_html_tags("check out #blah", "twitter")

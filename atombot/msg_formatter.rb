@@ -19,7 +19,7 @@ module AtomBot
     def tag_link(tag, svc)
       linktext=tag
       if tag[0] == ?# # Does it start with @?
-        tag = tag.gsub(/^#(.*)/, '\1').downcase
+        tag = tag.gsub(/^#(.*)/, '\1').gsub(/\./, '').downcase
       end
       s = services[svc]
       $logger.info "Could not find #{svc} from #{services.keys.inspect}" if s.nil?
@@ -35,7 +35,7 @@ module AtomBot
     end
 
     def format_html_tags(text, svc)
-      text.gsub(/(\W*)(#[\w_]+)/) {|x| $1 + tag_link($2, svc)}.gsub(/&/, '&amp;')
+      text.gsub(/(\W*)(#[^\s]+)/) {|x| $1 + tag_link($2, svc)}.gsub(/&/, '&amp;')
     end
 
     def format_html_body(from, text, type, svc)
