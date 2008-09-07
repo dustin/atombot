@@ -45,7 +45,7 @@ end
 post '/submit/:apikey' do
 
   service = Service.first(:api_key => params[:apikey])
-  raise Sinatra::NotFound.new if service.nil?
+  send_data "Invalid API key\n", :status => 403 if service.nil?
 
   msg = Document.new(params[:msg])
   entry = msg.elements["//entry"]
