@@ -19,7 +19,7 @@ module AtomBot
     def tag_link(tag, svc)
       linktext=tag
       if tag[0] == ?# # Does it start with @?
-        tag = tag.gsub(/^#(.*)/, '\1')
+        tag = tag.gsub(/^#(.*)/, '\1').downcase
       end
       s = services[svc]
       $logger.info "Could not find #{svc} from #{services.keys.inspect}" if s.nil?

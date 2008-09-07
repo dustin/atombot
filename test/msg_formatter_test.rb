@@ -51,6 +51,11 @@ class QueryTest < Test::Unit::TestCase
       format_html_tags("check out #blah", "identica")
   end
 
+  def test_tag_mixed_case_html_identica
+    assert_equal %Q{check out <a href="http://identi.ca/tag/blah">#BlaH</a>},
+      format_html_tags("check out #BlaH", "identica")
+  end
+
   def test_tag_html_twitter
     assert_equal %Q{check out #blah},
       format_html_tags("check out #blah", "twitter")
