@@ -39,6 +39,9 @@ module AtomBot
       pos_str.proper_subset?(words) && neg_str.intersection(words).empty?
     end
 
+    def to_s
+      "<Query: pos=#{@positive.join(', ')}; neg=#{@negative.join(', ')}>"
+    end
   end
 
 end
