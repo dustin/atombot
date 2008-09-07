@@ -36,7 +36,7 @@ module AtomBot
       pos_str = Set.new(@positive.map{|w| w.to_s})
       neg_str = Set.new(@negative.map{|w| w.to_s})
 
-      pos_str.proper_subset?(words) && neg_str.intersection(words).empty?
+      pos_str.subset?(words) && neg_str.intersection(words).empty?
     end
 
     def to_s
