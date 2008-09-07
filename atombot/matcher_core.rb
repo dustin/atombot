@@ -22,6 +22,10 @@ module AtomBot
     def user
       User.first :id => @uid
     end
+
+    def to_s
+      "Message for #{user.jid}"
+    end
   end
 
   class Matcher
