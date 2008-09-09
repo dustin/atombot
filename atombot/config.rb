@@ -8,7 +8,7 @@ require 'atombot/logging'
 module AtomBot
   module Config
     CONF = ::YAML.load_file 'atombot.yml'
-    VERSION = `git rev-parse --short HEAD`
+    VERSION = `git describe`
     SCREEN_NAME = CONF['incoming']['jid']
     IGNORED_JIDS = CONF['ignored'] || []
 
