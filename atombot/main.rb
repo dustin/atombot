@@ -26,7 +26,8 @@ module AtomBot
 
       jid = Jabber::JID.new(AtomBot::Config::CONF['incoming']['jid'])
       @client = Jabber::Client.new(jid)
-      @client.connect
+      @client.connect(AtomBot::Config::CONF['incoming']['server'],
+        AtomBot::Config::CONF['incoming'].fetch('port', 5222))
       @client.auth(AtomBot::Config::CONF['incoming']['pass'])
       register_callbacks
       subscribe_to_unknown
