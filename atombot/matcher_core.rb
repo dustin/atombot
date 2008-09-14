@@ -63,7 +63,6 @@ module AtomBot
       message = "#{match.msg[:author]}: #{match.msg[:message]}"
       user = match.user
       $logger.info "]]] #{user.jid}"
-      $stdout.flush
       @beanstalk.yput(match.msg.merge({'to' => user.jid}))
     end
 
