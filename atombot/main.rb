@@ -43,7 +43,8 @@ module AtomBot
     end
 
     def set_status(msg)
-        @client.send(Jabber::Presence.new(nil, msg, @status))
+      show = @status > 0 ? nil : :xa
+      @client.send(Jabber::Presence.new(show, msg, @status))
     end
 
     def update_status
