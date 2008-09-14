@@ -41,13 +41,17 @@ module AtomBot
       update_status
     end
 
+    def egress_only?
+      @status < 0
+    end
+
     def set_status(msg)
-      show = @status > 0 ? nil : :xa
+      show = egress_only? ? :xa : nil
       @client.send(Jabber::Presence.new(show, msg, @status))
     end
 
     def update_status
-      if @status > 0
+      if egress_only?
         nu = User.count
         nt = Track.count
         if @num_users != nu || @num_tracks != nt
@@ -156,7 +160,7 @@ module AtomBot
         end
       end
 
-      if @status > 0
+      unless egress_only?
         @roster.add_subscription_request_callback do |roster_item, presence|
           @roster.accept_subscription(presence.from)
           subscribe_to presence.from.bare.to_s
