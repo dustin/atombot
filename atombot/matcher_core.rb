@@ -59,19 +59,24 @@ module AtomBot
       @matcher.matches(words).map { |id| Match.new(id, stuff) }
     end
 
-    def enqueue_match(msg, match)
+    def enqueue_match(match)
       message = "#{match.msg[:author]}: #{match.msg[:message]}"
       user = match.user
       $logger.info "]]] #{user.jid}"
       $stdout.flush
       @beanstalk.yput(match.msg.merge({'to' => user.jid}))
-      TrackedMessage.create(:user_id => user.id, :message_id => msg.id)
     end
 
-    def store_message(stuff)
-      Message.create(:service_id => @services[stuff[:source]].id,
-        :remote_id => -1, :sender_name => stuff[:author],
-        :body => stuff[:message], :atom => stuff[:atom])
+    def store_message(stuff, matches)
+      timing = Benchmark.measure do
+        msg = Message.create(:service_id => @services[stuff[:source]].id,
+          :remote_id => -1, :sender_name => stuff[:author],
+          :body => stuff[:message], :atom => stuff[:atom])
+        matches.each do |match|
+          TrackedMessage.create(:user_id => match.uid, :message_id => msg.id)
+        end
+      end
+      printf "... atom storage time was %.5fs\n", timing.real
     end
 
     def process
@@ -82,10 +87,10 @@ module AtomBot
         # Need some signaling to make this not happen most of the time.
         load_matches
         matches = look_for_matches stuff
-        msg = store_message(stuff)
+        store_message stuff, matches
         job.delete
         job = nil
-        matches.each { |match| enqueue_match msg, match }
+        matches.each { |match| enqueue_match match }
       end
       printf "... Total processing time was %.5fs\n", timing.real
     rescue StandardError, Interrupt
