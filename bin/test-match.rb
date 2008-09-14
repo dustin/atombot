@@ -2,6 +2,8 @@
 
 require 'atombot/matcher_core'
 
+raise "Usage: #{$0} source author message..." unless $*.length > 2
+
 source, author, msg = $*.join(' ').split(' ', 3)
 
 matcher = AtomBot::Matcher.new
