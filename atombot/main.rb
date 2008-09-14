@@ -47,12 +47,14 @@ module AtomBot
     end
 
     def update_status
-      nu = User.count
-      nt = Track.count
-      if @num_users != nu || @num_tracks != nt
-        set_status "Tracking #{nt} topics for #{nu} users"
-        @num_users = nu
-        @num_tracks = nt
+      if @status > 0
+        nu = User.count
+        nt = Track.count
+        if @num_users != nu || @num_tracks != nt
+          set_status "Tracking #{nt} topics for #{nu} users"
+          @num_users = nu
+          @num_tracks = nt
+        end
       end
     end
 
