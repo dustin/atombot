@@ -33,7 +33,6 @@ module AtomBot
       @status=status
 
       register_callbacks
-      subscribe_to_unknown
 
       @num_users = 0
       @num_tracks = 0
@@ -137,6 +136,25 @@ module AtomBot
 
       @roster = Jabber::Roster::Helper.new(@client)
 
+      @client.add_message_callback do |message|
+        begin
+          if message.type == :error
+            $logger.info "Error message from #{message.from.to_s}:  #{message.to_s}"
+          elsif ignored_sender? message
+            $logger.info "Ignored message from #{message.from.to_s}"
+          elsif from_a_feeder? message
+            process_feeder_message message
+          else
+            process_user_message message
+          end
+          $stdout.flush
+        rescue StandardError, Interrupt
+          $logger.info "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
+          $stdout.flush
+        end
+      end
+
+      if @status > 0
         @roster.add_subscription_request_callback do |roster_item, presence|
           @roster.accept_subscription(presence.from)
           subscribe_to presence.from.bare.to_s
@@ -145,25 +163,6 @@ module AtomBot
           end
         end
 
-        @client.add_message_callback do |message|
-          begin
-            if message.type == :error
-              $logger.info "Error message from #{message.from.to_s}:  #{message.to_s}"
-            elsif ignored_sender? message
-              $logger.info "Ignored message from #{message.from.to_s}"
-            elsif from_a_feeder? message
-              process_feeder_message message
-            else
-              process_user_message message
-            end
-            $stdout.flush
-          rescue StandardError, Interrupt
-            $logger.info "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
-            $stdout.flush
-          end
-        end
-
-      if @status > 0
         @client.add_presence_callback do |presence|
           status = if presence.type.nil?
             presence.show.nil? ? :available : presence.show
@@ -174,6 +173,8 @@ module AtomBot
           $stdout.flush
           User.update_status presence.from.bare.to_s, status.to_s
         end
+
+        subscribe_to_unknown
       end
     end
 
