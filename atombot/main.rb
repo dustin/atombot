@@ -136,41 +136,43 @@ module AtomBot
 
       @roster = Jabber::Roster::Helper.new(@client)
 
-      @roster.add_subscription_request_callback do |roster_item, presence|
-        @roster.accept_subscription(presence.from)
-        subscribe_to presence.from.bare.to_s
-        AtomBot::Config::CONF['admins'].each do |admin|
-          deliver admin, "Registered new user: #{presence.from.bare.to_s}"
-        end
-      end
-
-      @client.add_message_callback do |message|
-        begin
-          if message.type == :error
-            $logger.info "Error message from #{message.from.to_s}:  #{message.to_s}"
-          elsif ignored_sender? message
-            $logger.info "Ignored message from #{message.from.to_s}"
-          elsif from_a_feeder? message
-            process_feeder_message message
-          else
-            process_user_message message
+      if @status > 0
+        @roster.add_subscription_request_callback do |roster_item, presence|
+          @roster.accept_subscription(presence.from)
+          subscribe_to presence.from.bare.to_s
+          AtomBot::Config::CONF['admins'].each do |admin|
+            deliver admin, "Registered new user: #{presence.from.bare.to_s}"
           end
-          $stdout.flush
-        rescue StandardError, Interrupt
-          $logger.info "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
-          $stdout.flush
         end
-      end
 
-      @client.add_presence_callback do |presence|
-        status = if presence.type.nil?
-          presence.show.nil? ? :available : presence.show
-        else
-          presence.type
+        @client.add_message_callback do |message|
+          begin
+            if message.type == :error
+              $logger.info "Error message from #{message.from.to_s}:  #{message.to_s}"
+            elsif ignored_sender? message
+              $logger.info "Ignored message from #{message.from.to_s}"
+            elsif from_a_feeder? message
+              process_feeder_message message
+            else
+              process_user_message message
+            end
+            $stdout.flush
+          rescue StandardError, Interrupt
+            $logger.info "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
+            $stdout.flush
+          end
         end
-        $logger.info "*** #{presence.from} -> #{status}"
-        $stdout.flush
-        User.update_status presence.from.bare.to_s, status.to_s
+
+        @client.add_presence_callback do |presence|
+          status = if presence.type.nil?
+            presence.show.nil? ? :available : presence.show
+          else
+            presence.type
+          end
+          $logger.info "*** #{presence.from} -> #{status}"
+          $stdout.flush
+          User.update_status presence.from.bare.to_s, status.to_s
+        end
       end
     end
 
