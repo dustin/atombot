@@ -11,6 +11,6 @@ ulimit -m 100000
 
 while :
 do
-	ruby incoming.rb "incoming$$"
+	ruby incoming.rb "incoming$$" "$@"
 	sleep 5
 done

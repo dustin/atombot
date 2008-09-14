@@ -14,7 +14,7 @@ module AtomBot
     include AtomBot::MsgFormatter
     include AtomBot::DeliveryHelper
 
-    def initialize(resource)
+    def initialize(resource, status=1)
       @beanstalk_out = Beanstalk::Pool.new [AtomBot::Config::CONF['outgoing']['beanstalkd']]
       @beanstalk_out.watch AtomBot::Config::CONF['outgoing']['tube']
       @beanstalk_out.ignore 'default'
@@ -30,6 +30,8 @@ module AtomBot
       @client.connect(AtomBot::Config::CONF['incoming']['server'],
         AtomBot::Config::CONF['incoming'].fetch('port', 5222))
       @client.auth(AtomBot::Config::CONF['incoming']['pass'])
+      @status=status
+
       register_callbacks
       subscribe_to_unknown
 
@@ -41,7 +43,7 @@ module AtomBot
     end
 
     def set_status(msg)
-        @client.send(Jabber::Presence.new(nil, msg, 1))
+        @client.send(Jabber::Presence.new(nil, msg, @status))
     end
 
     def update_status

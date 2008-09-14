@@ -42,6 +42,7 @@ loop do
   # Jabber::debug=true
 
   resource = $*.empty? ? "incoming" : $*[0]
+  status = $*.length > 1 ? $*[1].to_i : 1
 
-  AtomBot::Main.new(resource).run
+  AtomBot::Main.new(resource, status).run
 end
