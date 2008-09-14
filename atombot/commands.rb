@@ -139,6 +139,14 @@ module AtomBot
         end
       end
 
+      cmd :adm_user_status do |user, jid|
+        if AtomBot::Config::CONF['admins'].include? user.jid
+          send_msg user, get_status(User.first(:jid => jid)).join("\n")
+        else
+          send_msg user, "Sorry, you're not an admin."
+        end
+      end
+
       cmd :version do |user, nothing|
         out = ["Running version #{AtomBot::Config::VERSION}"]
         send_msg user, out.join("\n")
@@ -155,15 +163,7 @@ module AtomBot
       end
 
       cmd :status do |user, arg|
-        out = ["Jid:  #{user.jid}"]
-        out << "Jabber Status:  #{user.status}"
-        out << "IdentiSpy state:  #{user.active ? 'Active' : 'Not Active'}"
-        out << "You are currently tracking #{user.tracks.size} topics."
-        out << "Your feed is currently available at #{feed_for user}"
-        unless user.default_service_id.nil?
-          out << "Default posting service:  #{user.default_service.name}"
-        end
-        send_msg user, out.join("\n")
+        send_msg user, get_status(user).join("\n")
       end
 
       cmd :track, "Track a topic" do |user, arg|
@@ -411,7 +411,18 @@ EOF
         end
       end
 
-    end # CommandProcessor
+      def get_status(user)
+        out = ["Jid:  #{user.jid}"]
+        out << "Jabber Status:  #{user.status}"
+        out << "IdentiSpy state:  #{user.active ? 'Active' : 'Not Active'}"
+        out << "You are currently tracking #{user.tracks.size} topics."
+        out << "Your feed is currently available at #{feed_for user}"
+        unless user.default_service_id.nil?
+          out << "Default posting service:  #{user.default_service.name}"
+        end
+        out
+      end
 
+    end # CommandProcessor
   end
 end
