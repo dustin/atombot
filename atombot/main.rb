@@ -14,7 +14,7 @@ module AtomBot
     include AtomBot::MsgFormatter
     include AtomBot::DeliveryHelper
 
-    def initialize
+    def initialize(resource)
       @beanstalk_out = Beanstalk::Pool.new [AtomBot::Config::CONF['outgoing']['beanstalkd']]
       @beanstalk_out.watch AtomBot::Config::CONF['outgoing']['tube']
       @beanstalk_out.ignore 'default'
@@ -25,6 +25,7 @@ module AtomBot
       @services = Hash[* Service.all(:jid.not => nil).map{|s| [s.jid, s]}.flatten]
 
       jid = Jabber::JID.new(AtomBot::Config::CONF['incoming']['jid'])
+      jid.resource=resource
       @client = Jabber::Client.new(jid)
       @client.connect(AtomBot::Config::CONF['incoming']['server'],
         AtomBot::Config::CONF['incoming'].fetch('port', 5222))
