@@ -106,9 +106,9 @@ class ServiceHandler
     stuff = job.ybody
     user = resolve_user stuff[:user]
     $logger.info "Processing #{stuff.merge(:password => 'xxxxxxxx').inspect} for #{user.jid}"
-    self.send "process_#{stuff[:type]}", user, stuff
     job.delete
     job = nil
+    self.send "process_#{stuff[:type]}", user, stuff
   rescue StandardError, Interrupt
     $logger.info "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1
