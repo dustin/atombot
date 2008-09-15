@@ -97,7 +97,7 @@ class ServiceHandler
       url = mk_url usvc, rv
       success user, "Posted #{url}"
     end
-  rescue
+  rescue StandardError, Interrupt
     error user, "Failed to post your message."
   end
 
