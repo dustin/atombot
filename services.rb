@@ -73,8 +73,7 @@ class ServiceHandler
     error user, "svc not found, known services: #{@services.keys.sort.join ', '}" and return if svc.nil?
     s = service_for(svc, stuff[:username], stuff[:password])
     begin
-      # identi.ca doesn't seem to support this call
-      # s.verify_credentials
+      s.verify_credentials
       us = user.user_services.first(:service_id => svc.id) || user.user_services.new(:user => user, :service => svc)
       us.login = stuff[:username]
       us.password = Base64.encode64(stuff[:password]).strip
