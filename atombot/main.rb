@@ -51,7 +51,7 @@ module AtomBot
     end
 
     def update_status
-      if egress_only?
+      unless egress_only?
         nu = User.count
         nt = Track.count
         if @num_users != nu || @num_tracks != nt
