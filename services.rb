@@ -97,7 +97,9 @@ class ServiceHandler
       url = mk_url usvc, rv
       success user, "Posted #{url}"
     end
-  rescue StandardError, Interrupt
+  rescue Interrupt
+    error user, "Timed out waiting for response. Your post *may* have gone through."
+  rescue StandardError
     error user, "Failed to post your message."
   end
 
