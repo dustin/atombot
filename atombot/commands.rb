@@ -259,7 +259,7 @@ EOF
           if s.nil? || u.nil? || p.nil?
             send_msg user, errmsg
           else
-            service_msg(:user => user.id, :type => :setup, :service => s, :username => u, :password => p)
+            service_msg('user' => user.id, 'type' => 'setup', 'service' => s, 'username' => u, 'password' => p)
           end
         end
       end
@@ -340,7 +340,7 @@ EOF
           else
             user.default_service.name
           end
-          service_msg(:user => user.id, :type => :post, :service => s, :msg => msg)
+          service_msg('user' => user.id, 'type' => 'post', 'service' => s, 'msg' => msg)
         end
       end
       help_text :post, <<-EOF

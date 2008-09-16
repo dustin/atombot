@@ -52,15 +52,15 @@ module AtomBot
     end
 
     def look_for_matches(stuff)
-      words = Set.new(stuff[:message].downcase.split(/\W+/))
-      words << "from:#{stuff[:author].downcase}"
-      words << "source:#{stuff[:source]}"
-      words << "#{stuff[:author].downcase}"
+      words = Set.new(stuff['message'].downcase.split(/\W+/))
+      words << "from:#{stuff['author'].downcase}"
+      words << "source:#{stuff['source']}"
+      words << "#{stuff['author'].downcase}"
       @matcher.matches(words).map { |id| Match.new(id, stuff) }
     end
 
     def enqueue_match(match)
-      message = "#{match.msg[:author]}: #{match.msg[:message]}"
+      message = "#{match.msg['author']}: #{match.msg['message']}"
       user = match.user
       $logger.info "]]] #{user.jid}"
       @beanstalk.yput(match.msg.merge({'to' => user.jid}))
@@ -68,9 +68,9 @@ module AtomBot
 
     def store_message(stuff, matches)
       timing = Benchmark.measure do
-        msg = Message.create(:service_id => @services[stuff[:source]].id,
-          :remote_id => -1, :sender_name => stuff[:author],
-          :body => stuff[:message], :atom => stuff[:atom])
+        msg = Message.create(:service_id => @services[stuff['source']].id,
+          :remote_id => -1, :sender_name => stuff['author'],
+          :body => stuff['message'], :atom => stuff['atom'])
         matches.each do |match|
           TrackedMessage.create(:user_id => match.uid, :message_id => msg.id)
         end
@@ -82,7 +82,7 @@ module AtomBot
       job = @beanstalk.reserve
       timing = Benchmark.measure do
         stuff = job.ybody
-        $logger.info "[[[ #{stuff[:author]}: #{stuff[:message]}"
+        $logger.info "[[[ #{stuff['author']}: #{stuff['message']}"
         # Need some signaling to make this not happen most of the time.
         load_matches
         matches = look_for_matches stuff

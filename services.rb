@@ -69,14 +69,14 @@ class ServiceHandler
   end
 
   def process_setup(user, stuff)
-    svc = @services[stuff[:service]]
+    svc = @services[stuff['service']]
     error user, "svc not found, known services: #{@services.keys.sort.join ', '}" and return if svc.nil?
-    s = service_for(svc, stuff[:username], stuff[:password])
+    s = service_for(svc, stuff['username'], stuff['password'])
     begin
       s.verify_credentials
       us = user.user_services.first(:service_id => svc.id) || user.user_services.new(:user => user, :service => svc)
-      us.login = stuff[:username]
-      us.password = Base64.encode64(stuff[:password]).strip
+      us.login = stuff['username']
+      us.password = Base64.encode64(stuff['password']).strip
       us.save
 
       if user.default_service_id.nil?
@@ -91,8 +91,8 @@ class ServiceHandler
   end
 
   def process_post(user, stuff)
-    with_registered_user_service(user, stuff[:service]) do |usvc, s|
-      rv = s.post stuff[:msg][0...140], :source => 'identispy'
+    with_registered_user_service(user, stuff['service']) do |usvc, s|
+      rv = s.post stuff['msg'][0...140], :source => 'identispy'
       url = mk_url usvc, rv
       success user, "Posted #{url}"
     end
@@ -105,11 +105,11 @@ class ServiceHandler
   def process
     job = @beanstalk.reserve
     stuff = job.ybody
-    user = resolve_user stuff[:user]
-    $logger.info "Processing #{stuff.merge(:password => 'xxxxxxxx').inspect} for #{user.jid}"
+    user = resolve_user stuff['user']
+    $logger.info "Processing #{stuff.merge('password' => 'xxxxxxxx').inspect} for #{user.jid}"
     job.delete
     job = nil
-    self.send "process_#{stuff[:type]}", user, stuff
+    self.send "process_#{stuff['type']}", user, stuff
   rescue StandardError, Interrupt
     $logger.info "Error in run process.  #{$!}" + $!.backtrace.join("\n\t")
     sleep 1

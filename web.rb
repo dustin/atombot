@@ -56,11 +56,11 @@ post '/submit/:apikey' do
 
   message.gsub!(Regexp.new("^#{author}: "), '')
 
-  beanstalk_in.yput({:author => author,
-    :source => service.name,
-    :authorlink => authorlink,
-    :message => message,
-    :id => id,
-    :atom => entry.to_s
+  beanstalk_in.yput({'author' => author,
+    'source' => service.name,
+    'authorlink' => authorlink,
+    'message' => message,
+    'id' => id,
+    'atom' => entry.to_s
     })
 end

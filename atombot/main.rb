@@ -65,7 +65,7 @@ module AtomBot
     def process_outgoing(job)
       stuff = job.ybody
       $logger.info "]]] #{stuff['to']}"
-      if stuff[:message]
+      if stuff['message']
         deliver stuff['to'], format_track_msg(stuff)
       else
         deliver stuff['to'], stuff['msg']
@@ -85,12 +85,12 @@ module AtomBot
       message.gsub!(Regexp.new("^#{author}: "), '')
 
       $logger.info "[[[ msg from [#{source}] #{author}: #{message}"
-      @beanstalk_in.yput({:author => author,
-        :source => source,
-        :authorlink => authorlink,
-        :message => message,
-        :id => id,
-        :atom => entry.to_s
+      @beanstalk_in.yput({'author' => author,
+        'source' => source,
+        'authorlink' => authorlink,
+        'message' => message,
+        'id' => id,
+        'atom' => entry.to_s
         })
     rescue StandardError, Interrupt
       $logger.info "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t")

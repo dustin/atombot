@@ -18,7 +18,7 @@ module AtomBot
     end
 
     def rebuild
-      @beanstalk.yput({:type => 'rebuild'}, 65536, 0, 300)
+      @beanstalk.yput({'type' => 'rebuild'}, 65536, 0, 300)
     end
 
   end
@@ -38,7 +38,7 @@ module AtomBot
       100.times do
         job = @beanstalk.reserve(0)
         if rv.keys.include? job.ybody
-          $logger.info "Removing duplicate job:  #{job.ybody[:type]}"
+          $logger.info "Removing duplicate job:  #{job.ybody['type']}"
           job.delete
         else
           rv[job.ybody] = job
@@ -51,9 +51,9 @@ module AtomBot
     def run_job(job)
       stuff = job.ybody
       timing = Benchmark.measure do
-        self.send "process_#{stuff[:type]}", stuff
+        self.send "process_#{stuff['type']}", stuff
       end
-      printf "... Processed #{stuff[:type]} in %.5fs\n", timing.real
+      printf "... Processed #{stuff['type']} in %.5fs\n", timing.real
       job.delete
       job = nil
     rescue StandardError, Interrupt
