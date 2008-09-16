@@ -209,6 +209,7 @@ EOF
         end
         send_msg user, out.join("\n")
       end
+      alias_method :tracking, :tracks
 
       cmd :add_stop, "Add a stop word (global negative filter)" do |user, arg|
         with_arg(user, arg) do |a|
