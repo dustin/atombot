@@ -20,7 +20,7 @@ module AtomBot
     end
 
     def user
-      User.first :id => @uid
+      @user ||= User.first(:id => @uid)
     end
 
     def to_s
