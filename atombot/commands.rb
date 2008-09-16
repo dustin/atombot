@@ -169,7 +169,8 @@ module AtomBot
       cmd :track, "Track a topic" do |user, arg|
         with_arg(user, arg) do |a|
           user.track a.downcase
-          send_msg user, "Tracking #{a}"
+          send_msg(user, "Tracking #{a}\n" +
+            "(please wait a minute or two for changes to take effect)")
         end
       end
       help_text :track, <<-EOF
@@ -184,7 +185,8 @@ EOF
       cmd :untrack, "Stop tracking a topic" do |user, arg|
         with_arg(user, arg) do |a|
           if user.untrack a.downcase
-            send_msg user, "Stopped tracking #{a}"
+            send_msg(user, "Stopped tracking #{a}\n" +
+              "(please wait a minute or two for changes to take effect)")
           else
             send_msg user, "Didn't stop tracking #{a} (are you sure you were tracking it?)"
           end
@@ -215,7 +217,8 @@ EOF
         with_arg(user, arg) do |a|
           raise "You can't have spaces in a stop word (currently)" if /\s/ === arg
           user.stop a.downcase
-          send_msg user, "Added #{a} to the stop list"
+          send_msg(user, "Added #{a} to the stop list\n" +
+            "(please wait a minute or two for changes to take effect)")
         end
       end
       alias_method :addstop, :add_stop
@@ -234,7 +237,8 @@ EOF
       cmd :remove_stop, "Remove a stop word (global negative filter)" do |user, arg|
         with_arg(user, arg) do |a|
           if user.unstop a.downcase
-            send_msg user, "No longer treating #{a} as a stop word"
+            send_msg(user, "No longer treating #{a} as a stop word\n" +
+              "(please wait a minute or two for changes to take effect)")
           else
             send_msg user, "Didn't stop tracking #{a} (are you sure you were tracking it?)"
           end
