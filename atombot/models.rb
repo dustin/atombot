@@ -15,6 +15,7 @@ class User
   property :status, String
   property :auto_post, Boolean, :default => false
   property :default_service_id, Integer, :nullable => true
+  property :priority, Integer, :nullable => false, :default => 65536
 
   has n, :tracks
   has n, :user_global_filters

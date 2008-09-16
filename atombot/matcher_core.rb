@@ -24,7 +24,7 @@ module AtomBot
     end
 
     def to_s
-      "Message for #{user.jid}"
+      "Message for #{user.jid} (pri: #{user.priority})"
     end
   end
 
@@ -63,7 +63,7 @@ module AtomBot
       message = "#{match.msg['author']}: #{match.msg['message']}"
       user = match.user
       $logger.info "]]] #{user.jid}"
-      @beanstalk.yput(match.msg.merge({'to' => user.jid}))
+      @beanstalk.yput(match.msg.merge({'to' => user.jid}), user.priority)
     end
 
     def store_message(stuff, matches)
