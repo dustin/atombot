@@ -10,6 +10,6 @@ matcher = AtomBot::Matcher.new
 
 matcher.load_matches
 matches = matcher.look_for_matches(
-  :source => source, :author => author, :message => msg)
+  'source' => source, 'author' => author, 'message' => msg)
 
 puts matches
