@@ -1,5 +1,6 @@
 require 'htmlentities'
 require 'xmpp4r/roster'
+require 'xmpp4r/version/helper/responder'
 
 require 'atombot/config'
 require 'atombot/models'
@@ -158,6 +159,11 @@ module AtomBot
           $logger.info "Error processing incoming message:  #{$!}" + $!.backtrace.join("\n\t")
           $stdout.flush
         end
+      end
+
+      @version_helper = Jabber::Version::Responder.new(@client)
+      @version_helper.add_version_callback do |iq, block|
+        block.call('IdentiSpy', AtomBot::Config::VERSION, 'Linux')
       end
 
       unless egress_only?
