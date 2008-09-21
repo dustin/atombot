@@ -1,5 +1,9 @@
 require 'htmlentities'
 require 'xmpp4r/roster'
+require 'xmpp4r/discovery'
+require 'xmpp4r/dataforms'
+require 'xmpp4r/command/iq/command'
+require 'xmpp4r/command/helper/responder'
 require 'xmpp4r/version/helper/simpleresponder'
 
 require 'atombot/config'
@@ -27,6 +31,7 @@ module AtomBot
 
       jid = Jabber::JID.new(AtomBot::Config::CONF['incoming']['jid'])
       jid.resource=resource
+      @jid = jid
       @client = Jabber::Client.new(jid)
       @client.connect(AtomBot::Config::CONF['incoming']['server'],
         AtomBot::Config::CONF['incoming'].fetch('port', 5222))
@@ -131,6 +136,11 @@ module AtomBot
       AtomBot::Config::IGNORED_JIDS.include? message.from.bare.to_s
     end
 
+    def initialize_commands
+      @commands = {}
+      @commands['version'] = Jabber::Command::IqCommand.new('version')
+    end
+
     def register_callbacks
 
       @client.on_exception do |e, stream, symbol|
@@ -182,6 +192,39 @@ module AtomBot
           $logger.info "*** #{presence.from} -> #{status}"
           $stdout.flush
           User.update_status presence.from.bare.to_s, status.to_s
+        end
+
+        @cmd_helper = Jabber::Command::Responder.new(@client)
+        initialize_commands
+
+        @cmd_helper.add_commands_disco_callback do |iq|
+          i = Jabber::Iq::new(:result, iq.from)
+          i.from = @jid
+          i.id = iq.id
+          i.query = Jabber::Discovery::IqQueryDiscoItems::new
+          i.query.node='http://jabber.org/protocol/commands'
+          @commands.each_pair do |node, command|
+            puts "Adding #{node.inspect}/#{command.inspect} command with #{command.text.inspect} and #{command.node.inspect}"
+            i.query.add(Jabber::Discovery::Item::new(@jid, command.node, command.node))
+          end
+          @client.send(i)
+        end
+
+        @cmd_helper.add_commands_exec_callback do |iq|
+          cmd_node = iq.command.attributes['node']
+          $logger.info "Executing command #{cmd_node}"
+          i = Jabber::Iq::new(:result, iq.from)
+          i.from = @jid
+          i.id = iq.id
+          com = i.add_element(Jabber::Command::IqCommand::new(@node))
+          com.status = :completed
+          form = com.add_element(Jabber::Dataforms::XData::new('result'))
+          v = form.add_element(Jabber::Dataforms::XDataField.new('version', 'jid-single'))
+          v.value = AtomBot::Config::VERSION
+          # This should work
+          # note = com.add_element(Jabber::XMPPElement.new('note'))
+          # note.add_text 'Woo!'
+          @client.send i
         end
 
         subscribe_to_unknown
