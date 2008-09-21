@@ -219,7 +219,7 @@ module AtomBot
           com = i.add_element(Jabber::Command::IqCommand::new(@node))
           com.status = :completed
           form = com.add_element(Jabber::Dataforms::XData::new('result'))
-          v = form.add_element(Jabber::Dataforms::XDataField.new('version', 'jid-single'))
+          v = form.add_element(Jabber::Dataforms::XDataField.new('version', 'text-single'))
           v.value = AtomBot::Config::VERSION
           # This should work
           # note = com.add_element(Jabber::XMPPElement.new('note'))
