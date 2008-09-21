@@ -1,6 +1,6 @@
 require 'htmlentities'
 require 'xmpp4r/roster'
-require 'xmpp4r/version/helper/responder'
+require 'xmpp4r/version/helper/simpleresponder'
 
 require 'atombot/config'
 require 'atombot/models'
@@ -161,10 +161,8 @@ module AtomBot
         end
       end
 
-      @version_helper = Jabber::Version::Responder.new(@client)
-      @version_helper.add_version_callback do |iq, block|
-        block.call('IdentiSpy', AtomBot::Config::VERSION, 'Linux')
-      end
+      Jabber::Version::SimpleResponder.new(@client,
+        'IdentiSpy', AtomBot::Config::VERSION, 'Linux')
 
       unless egress_only?
         @roster.add_subscription_request_callback do |roster_item, presence|
