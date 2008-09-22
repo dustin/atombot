@@ -45,7 +45,12 @@ class User
   end
 
   def untrack(query)
-    t = Track.first(:query => query, :user_id => self.id) or return false
+    t = case query
+    when Integer
+      Track.first(:id => query, :user_id => self.id)
+    when String
+      Track.first(:query => query, :user_id => self.id)
+    end or return false
     t.destroy
     invalidate_match_cache
   end
