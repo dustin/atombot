@@ -1,3 +1,5 @@
+require 'atombot/models'
+
 module AtomBot
 
   module XMPPCommands
@@ -73,6 +75,44 @@ module AtomBot
           end
         end
       end
+    end
+
+    class UnTrack < Base
+
+      def initialize
+        super('untrack', 'Remove a Track', 'Remove a track query.')
+      end
+
+      def execute(conn, user, iq)
+        case iq.command.action
+        when :cancel
+          send_result(conn, iq, :canceled)
+        when nil
+          args = iq.command.first_element('x')
+          if args.blank?
+            send_result(conn, iq, :executing) do |com|
+              a = com.add_element("actions")
+              a.attributes['execute'] = 'complete'
+              a.add_element('prev')
+              a.add_element('complete')
+
+              form = com.add_element(Jabber::Dataforms::XData::new)
+              form.title = 'Untrack one or more current tracks.'
+              form.instructions = "Select the queries to stop tracking and submit."
+              field = form.add_element(Jabber::Dataforms::XDataField.new('torm', :list_multi))
+              field.options = user.tracks.sort_by{|t| t.query}.map{|t| [t.id, t.query]}
+            end
+          else
+            torm = args.fields.select {|f| f.var == 'torm'}.first
+            torm.values.each do |i|
+              puts "Untracking #{i}"
+              user.untrack i.to_i
+            end
+            send_result(conn, iq)
+          end
+        end
+      end
+
     end
 
     def self.commands
