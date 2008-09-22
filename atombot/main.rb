@@ -4,7 +4,7 @@ require 'xmpp4r/discovery'
 require 'xmpp4r/dataforms'
 require 'xmpp4r/command/iq/command'
 require 'xmpp4r/command/helper/responder'
-require 'xmpp4r/version/helper/simpleresponder'
+require 'xmpp4r/version'
 
 require 'atombot/config'
 require 'atombot/models'
