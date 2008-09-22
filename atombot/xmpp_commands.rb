@@ -11,7 +11,7 @@ module AtomBot
         @description=description
       end
 
-      def execute(conn, iq)
+      def execute(conn, user, iq)
         raise "Not Implemented"
       end
 
@@ -33,7 +33,7 @@ module AtomBot
         super('version', 'Version', 'Get the current version of the bot software.')
       end
 
-      def execute(conn, iq)
+      def execute(conn, user, iq)
         send_result(conn, iq) do |com|
           form = com.add_element(Jabber::Dataforms::XData::new('result'))
           v = form.add_element(Jabber::Dataforms::XDataField.new('version', 'text-single'))

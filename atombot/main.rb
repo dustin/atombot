@@ -211,7 +211,8 @@ module AtomBot
 
         @cmd_helper.add_commands_exec_callback do |iq|
           cmd_node = iq.command.attributes['node']
-          @commands[cmd_node].execute(@client, iq)
+          user = User.first(:jid => iq.from.bare.to_s) || User.create(:jid => iq.from.bare.to_s)
+          @commands[cmd_node].execute(@client, user, iq)
         end
 
         subscribe_to_unknown
