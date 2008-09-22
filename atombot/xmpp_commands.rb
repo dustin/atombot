@@ -79,7 +79,7 @@ module AtomBot
       end
 
       def add_form(user, iq, com)
-        next_actions(com, 'execute', 'prev', 'complete')
+        next_actions(com, 'execute', 'complete')
         form = com.add_element(Jabber::Dataforms::XData::new)
         form.add_element(Jabber::Dataforms::XDataField.new('query', 'text-single'))
       end
