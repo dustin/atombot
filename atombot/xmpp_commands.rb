@@ -81,6 +81,15 @@ module AtomBot
       def add_form(user, iq, com)
         next_actions(com, 'execute', 'complete')
         form = com.add_element(Jabber::Dataforms::XData::new)
+        form.title = 'Add a track query.'
+        form.instructions = <<-EOF
+Track gives you powerful queries delivered in realtime to your IM client.
+Example queries:
+
+iphone
+iphone -android
+iphone android
+EOF
         form.add_element(Jabber::Dataforms::XDataField.new('query', 'text-single'))
       end
 
