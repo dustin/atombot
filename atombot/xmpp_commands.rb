@@ -29,6 +29,33 @@ module AtomBot
       end
     end
 
+    class MultiBase < Base
+
+      def next_actions(com, execute, *actions)
+        ael = com.add_element("actions")
+        ael.attributes['execute'] = execute
+        actions.each {|a| ael.add_element a}
+      end
+
+      def execute(conn, user, iq)
+        $logger.info "Executing #{self.class.to_s} for #{user.jid} action=#{iq.command.action.inspect}"
+        case iq.command.action
+        when :cancel
+          send_result(conn, iq, :canceled)
+        when nil, :complete
+          args = iq.command.first_element('x')
+          if args.blank?
+            send_result(conn, iq, :executing) do |com|
+              add_form(user, iq, com)
+            end
+          else
+            complete(conn, user, iq, args)
+          end
+        end
+      end
+
+    end
+
     class Version < Base
 
       def initialize
@@ -45,78 +72,60 @@ module AtomBot
 
     end
 
-    class AddTrack < Base
+    class AddTrack < MultiBase
 
       def initialize
         super('track', 'Add a Track', 'Add a track query.')
       end
 
-      def execute(conn, user, iq)
-        case iq.command.action
-        when :cancel
-          send_result(conn, iq, :canceled)
-        when nil
-          args = iq.command.first_element('x')
-          if args.blank?
-            send_result(conn, iq, :executing) do |com|
-              a = com.add_element("actions")
-              a.attributes['execute'] = 'complete'
-              a.add_element('prev')
-              a.add_element('complete')
-
-              form = com.add_element(Jabber::Dataforms::XData::new)
-              form.add_element(Jabber::Dataforms::XDataField.new('query', 'text-single'))
-            end
-          else
-            h=Hash[*args.fields.map {|f| [f.var, f.value]}.flatten]
-            user.track h['query'].downcase
-            $logger.info("Tracked #{h['query']} for #{user.to_s}")
-            send_result(conn, iq)
-          end
-        end
+      def add_form(user, iq, com)
+        next_actions(com, 'execute', 'prev', 'complete')
+        form = com.add_element(Jabber::Dataforms::XData::new)
+        form.add_element(Jabber::Dataforms::XDataField.new('query', 'text-single'))
       end
+
+      def complete(conn, user, iq, args)
+        puts "Add track complete"
+        h=Hash[*args.fields.map {|f| [f.var, f.value]}.flatten]
+        user.track h['query'].downcase
+        $logger.info("Tracked #{h['query']} for #{user.to_s}")
+        send_result(conn, iq)
+      end
+
     end
 
-    class UnTrack < Base
+    class UnTrack < MultiBase
 
       def initialize
         super('untrack', 'Remove a Track', 'Remove a track query.')
       end
 
-      def execute(conn, user, iq)
-        case iq.command.action
-        when :cancel
-          send_result(conn, iq, :canceled)
-        when nil
-          args = iq.command.first_element('x')
-          if args.blank?
-            send_result(conn, iq, :executing) do |com|
-              a = com.add_element("actions")
-              a.attributes['execute'] = 'complete'
-              a.add_element('prev')
-              a.add_element('complete')
+      def add_form(user, iq, com)
+        a = com.add_element("actions")
+        a.attributes['execute'] = 'complete'
+        a.add_element('prev')
+        a.add_element('complete')
 
-              form = com.add_element(Jabber::Dataforms::XData::new)
-              form.title = 'Untrack one or more current tracks.'
-              form.instructions = "Select the queries to stop tracking and submit."
-              field = form.add_element(Jabber::Dataforms::XDataField.new('torm', :list_multi))
-              field.options = user.tracks.sort_by{|t| t.query}.map{|t| [t.id, t.query]}
-            end
-          else
-            torm = args.fields.select {|f| f.var == 'torm'}.first
-            torm.values.each do |i|
-              puts "Untracking #{i}"
-              user.untrack i.to_i
-            end
-            send_result(conn, iq)
-          end
+        form = com.add_element(Jabber::Dataforms::XData::new)
+        form.title = 'Untrack one or more current tracks.'
+        form.instructions = "Select the queries to stop tracking and submit."
+        field = form.add_element(Jabber::Dataforms::XDataField.new('torm', :list_multi))
+        field.options = user.tracks.sort_by{|t| t.query}.map{|t| [t.id, t.query]}
+      end
+
+      def complete(conn, user, iq, args)
+        torm = args.fields.select {|f| f.var == 'torm'}.first
+        torm.values.each do |i|
+          puts "Untracking #{i}"
+          user.untrack i.to_i
         end
+        send_result(conn, iq)
       end
 
     end
 
     def self.commands
-      constants.map{|c| const_get c}.select {|c| c != Base }
+      constants.map{|c| const_get c}.select {|c| c != Base && c != MultiBase }
     end
   end
 
