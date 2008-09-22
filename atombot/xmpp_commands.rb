@@ -101,10 +101,7 @@ module AtomBot
       end
 
       def add_form(user, iq, com)
-        a = com.add_element("actions")
-        a.attributes['execute'] = 'complete'
-        a.add_element('prev')
-        a.add_element('complete')
+        next_actions(com, 'execute', 'complete')
 
         form = com.add_element(Jabber::Dataforms::XData::new)
         form.title = 'Untrack one or more current tracks.'
