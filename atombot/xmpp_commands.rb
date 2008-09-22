@@ -52,6 +52,13 @@ module AtomBot
             complete(conn, user, iq, args)
           end
         end
+      rescue
+        send_result(conn, iq) do |com|
+          note = com.add_element('note')
+          note.attributes['type'] = 'error'
+          note.add_text($!.to_s)
+          error = com.add_element(Jabber::ErrorResponse.new('bad-request'))
+        end
       end
 
     end
