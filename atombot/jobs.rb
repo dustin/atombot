@@ -50,6 +50,7 @@ module AtomBot
 
     def run_job(job)
       stuff = job.ybody
+      $logger.info "Running a #{stuff['type']}"
       timing = Benchmark.measure do
         self.send "process_#{stuff['type']}", stuff
       end
