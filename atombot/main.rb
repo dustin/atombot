@@ -94,7 +94,7 @@ module AtomBot
         'atom' => entry.to_s
         })
     rescue StandardError, Interrupt
-      $logger.info "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t")
+      $logger.info "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t") + "\n" + message.to_s
     end
 
     def subscribe_to_unknown
