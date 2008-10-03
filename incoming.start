@@ -11,6 +11,13 @@ ulimit -m 100000
 
 while :
 do
-	ruby incoming.rb "incoming$$" "$@"
+	rsrc=""
+	if [ $# -lt 1 ]
+	then
+		rsrc="incoming"
+	else
+		rsrc="outgoing.$$"
+	fi
+	ruby incoming.rb $rsrc "$@"
 	sleep 5
 done
