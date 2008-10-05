@@ -104,7 +104,7 @@ iphone
 iphone -android
 iphone android
 EOF
-        form.add_element(Jabber::Dataforms::XDataField.new('query', 'text-single'))
+        add_field form, 'query', ' Query'
       end
 
       def complete(conn, user, iq, args)
