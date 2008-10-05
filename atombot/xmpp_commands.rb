@@ -144,6 +144,34 @@ EOF
 
     end
 
+    class AddService < MultiBase
+      def initialize
+        super('addservice', 'Register a Service', 'Register a service.')
+      end
+
+      def add_form(user, iq, com)
+        next_actions(com, 'execute', 'complete')
+
+        form = com.add_element(Jabber::Dataforms::XData.new)
+        form.title = 'Add a Service'
+        form.instructions = "Register your login with an available service."
+
+        svc = add_field form, 'service', 'Services', nil, :list_single
+        svc.options = Service.all(:listed => true).map{|s| [s.id, s.name]}
+
+        add_field form, 'login', 'Username'
+        add_field form, 'password', 'Password', nil, :text_secret
+      end
+
+      def complete(conn, user, iq, args)
+        h=Hash[*args.fields.map {|f| [f.var, f.value]}.flatten]
+        service_msg('user' => user.id, 'type' => 'setup', 'service' => s.name,
+          'username' => h['login'], 'password' => h['password'])
+        send_result conn, iq
+      end
+
+    end
+
     def self.commands
       constants.map{|c| const_get c}.select {|c| c != Base && c != MultiBase }
     end
