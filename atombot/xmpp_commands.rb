@@ -126,7 +126,7 @@ EOF
       def add_form(user, iq, com)
         next_actions(com, 'execute', 'complete')
 
-        form = com.add_element(Jabber::Dataforms::XData::new)
+        form = com.add_element(Jabber::Dataforms::XData.new)
         form.title = 'Untrack one or more current tracks.'
         form.instructions = "Select the queries to stop tracking and submit."
         field = add_field form, 'torm', 'Tracks', nil, :list_multi
