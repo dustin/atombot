@@ -153,7 +153,9 @@ module AtomBot
 
       cmd :on, "Activate updates." do |user, nothing|
         change_user_active_state(user, true)
-        send_msg user, "Marked you active."
+        out = ["Marked you active."]
+        out << "It may take a couple of minutes for tracks to resume."
+        send_msg user, out.join("\n")
       end
 
       cmd :off, "Disable updates." do |user, nothing|
