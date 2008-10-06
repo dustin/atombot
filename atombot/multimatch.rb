@@ -1,3 +1,5 @@
+require 'trie'
+
 require 'atombot/query'
 require 'atombot/cache'
 
@@ -33,7 +35,7 @@ module AtomBot
     # Receives a list of pairs [query, something] and returns the somethings
     # for the queries on match hit
     def initialize(queries_and_targets)
-      @queries = {}
+      @queries = Trie.new
       @version = CacheInterface.new.new_version_num
 
       queries_and_targets.each do |query, target|
@@ -41,8 +43,7 @@ module AtomBot
         value = [q, target]
         q.positive.each do |word|
           ws = word.to_s
-          @queries[ws] = [] if @queries[ws].nil?
-          @queries[ws] << value
+          @queries.insert ws, value
         end
       end
     end

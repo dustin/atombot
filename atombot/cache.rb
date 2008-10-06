@@ -6,7 +6,7 @@ require 'atombot/config'
 module AtomBot
   module Cache
 
-    MATCH_KEY = "matches" unless defined? MATCH_KEY
+    MATCH_KEY = "matches-trie" unless defined? MATCH_KEY
 
     def init_cache
       conf = AtomBot::Config::CONF['general']
