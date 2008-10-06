@@ -148,8 +148,7 @@ module AtomBot
       end
 
       cmd :version do |user, nothing|
-        out = ["Running version #{AtomBot::Config::VERSION}"]
-        send_msg user, out.join("\n")
+        send_msg user, "Running version #{AtomBot::Config::VERSION}"
       end
 
       cmd :on, "Activate updates." do |user, nothing|
