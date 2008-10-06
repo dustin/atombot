@@ -71,6 +71,11 @@ class User
     user_global_filters.map{|x| "-#{x.word}"}.join(" ")
   end
 
+  def change_active_state(to)
+    self.active = to
+    invalidate_match_cache
+  end
+
   def invalidate_match_cache
     AtomBot::JobAccess.new.rebuild
   end

@@ -413,7 +413,7 @@ EOF
 
       def change_user_active_state(user, to)
         if user.active != to
-          user.active = to
+          user.change_active_state(to)
           user.save
         end
       end
