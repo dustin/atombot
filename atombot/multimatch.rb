@@ -9,7 +9,10 @@ module AtomBot
 
     def self.load_all
       user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
-      AtomBot::MultiMatch.new(Track.all.map{|t| [t.query + " " + user_negs[t.user_id], t.user_id]})
+      away_users = Set.new(User.all(:active => false).map{|u| u.id})
+      AtomBot::MultiMatch.new(Track.all.reject do |t|
+            away_users.include?(t.user_id)
+          end.map { |t| [t.query + " " + user_negs[t.user_id], t.user_id]})
     end
 
     def self.all
