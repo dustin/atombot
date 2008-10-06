@@ -18,7 +18,7 @@ module AtomBot
     end
 
     def rebuild
-      @beanstalk.yput({'type' => 'rebuild'}, 65536, 0, 300)
+      @beanstalk.yput({'type' => 'rebuild'}, 65536, 0, 900)
     end
 
   end
