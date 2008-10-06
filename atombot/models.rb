@@ -73,11 +73,11 @@ class User
 
   def change_active_state(to)
     self.active = to
-    invalidate_match_cache
+    invalidate_match_cache(5)
   end
 
-  def invalidate_match_cache
-    AtomBot::JobAccess.new.rebuild
+  def invalidate_match_cache(*args)
+    AtomBot::JobAccess.new.rebuild(*args)
   end
 end
 
