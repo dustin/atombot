@@ -36,4 +36,11 @@ class QueryTest < Test::Unit::TestCase
     assert_equal Set.new([1, 2]), mm.matches(%w(some text that does match))
   end
 
+  def test_marshalling
+    min = MultiMatch.new [['key', 1]]
+    m = Marshal.dump(min)
+    mout = Marshal.load m
+    assert_equal Set.new, mout.matches(%w(some text that can't match))
+  end
+
 end
