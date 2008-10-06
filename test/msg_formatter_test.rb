@@ -8,10 +8,10 @@ class QueryTest < Test::Unit::TestCase
   include AtomBot::MsgFormatter
 
   def setup
-    @services={}
-    @services['twitter'] = ::Service.new(:name => 'twitter',
+    @fmt_services={}
+    @fmt_services['twitter'] = ::Service.new(:name => 'twitter',
       :user_pattern => %q{<a href="http://twitter.com/#{user}">#{linktext}</a>})
-    @services['identica'] = ::Service.new(:name => 'identica',
+    @fmt_services['identica'] = ::Service.new(:name => 'identica',
       :user_pattern => %q{<a href="http://identi.ca/#{user}">#{linktext}</a>},
       :tag_pattern => %q{<a href="http://identi.ca/tag/#{tag}">#{linktext}</a>})
   end
