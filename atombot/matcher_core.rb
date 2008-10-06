@@ -75,7 +75,7 @@ module AtomBot
           TrackedMessage.create(:user_id => match.uid, :message_id => msg.id)
         end
       end
-      printf "... atom storage time was %.5fs\n", timing.real
+      printf "... storage time was %.5fs\n", timing.real
     end
 
     def process
