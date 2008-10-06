@@ -17,8 +17,8 @@ module AtomBot
       @beanstalk.use AtomBot::Config::CONF['jobs']['tube']
     end
 
-    def rebuild
-      @beanstalk.yput({'type' => 'rebuild'}, 65536, 0, 900)
+    def rebuild(delay=0)
+      @beanstalk.yput({'type' => 'rebuild'}, 65536, delay, 900)
     end
 
   end
