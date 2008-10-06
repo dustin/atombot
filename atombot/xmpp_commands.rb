@@ -49,7 +49,7 @@ module AtomBot
         case iq.command.action
         when :cancel
           send_result(conn, iq, :canceled)
-        when nil, :complete
+        when nil, :complete, :execute
           args = iq.command.first_element('x')
           if args.blank?
             send_result(conn, iq, :executing) do |com|
