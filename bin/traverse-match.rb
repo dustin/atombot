@@ -3,7 +3,7 @@
 require 'atombot/multimatch'
 
 matches = AtomBot::MultiMatch.all
-puts "Marshalled to #{Marshal.dump(matches).size} bytes"
+$stderr.puts "Marshalled to #{Marshal.dump(matches).size} bytes"
 structure = matches.instance_variable_get('@queries')
 prev=[]
 structure.each do |topk, topv|
