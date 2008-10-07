@@ -65,6 +65,34 @@ module AtomBot
     def size
       @queries.size
     end
+
+    def _dump(depth)
+      rv=[]
+      prev=''
+      values=[]
+      @queries.each_value do |v|
+        q=v.first.to_q
+        if q != prev && !values.empty?
+          rv << "#{prev}\t#{values.map{|iv| iv.to_s}.join(' ')}"
+          values=[]
+        end
+        values << v.last
+        prev=q
+      end
+      rv << "#{prev}\t#{values.map{|v| v.to_s}.join(' ')}" unless values.empty?
+      rv.join("\n")
+    end
+
+    def self._load(o)
+      stuff = []
+      o.split("\n").each do |line|
+        q, nums_s=line.split("\t")
+        nums_s.split(" ").map{|s| s.to_i}.each do |num|
+          stuff << [q, num]
+        end
+      end
+      self.new stuff
+    end
   end
 
 end
