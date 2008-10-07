@@ -48,5 +48,13 @@ module AtomBot
       rv += @negative.map {|n| "-#{n}"}
       rv.join(' ')
     end
+
+    def _dump(depth)
+      to_q
+    end
+
+    def self._load(o)
+      self.new o
+    end
   end
 end
