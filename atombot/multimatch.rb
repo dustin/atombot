@@ -3,6 +3,7 @@ require 'trie'
 
 require 'atombot/query'
 require 'atombot/cache'
+require 'atombot/models'
 
 module AtomBot
 
