@@ -42,6 +42,11 @@ module AtomBot
     def to_s
       "<Query: pos=#{@positive.join(', ')}; neg=#{@negative.join(', ')}>"
     end
-  end
 
+    def to_q
+      rv=@positive.clone
+      rv += @negative.map {|n| "-#{n}"}
+      rv.join(' ')
+    end
+  end
 end
