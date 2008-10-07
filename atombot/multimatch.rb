@@ -36,9 +36,9 @@ module AtomBot
 
     # Receives a list of pairs [query, something] and returns the somethings
     # for the queries on match hit
-    def initialize(queries_and_targets)
+    def initialize(queries_and_targets, version=nil)
       @queries = Trie.new
-      @version = CacheInterface.new.new_version_num
+      @version = version.nil? ? CacheInterface.new.new_version_num : version
 
       queries_and_targets.each do |query, target|
         q = AtomBot::Query.new query
@@ -67,7 +67,7 @@ module AtomBot
     end
 
     def _dump(depth)
-      rv=[]
+      rv=[@version]
       prev=''
       values=[]
       @queries.each_value do |v|
@@ -84,14 +84,19 @@ module AtomBot
     end
 
     def self._load(o)
+      version=nil
       stuff = []
       o.split("\n").each do |line|
         q, nums_s=line.split("\t")
-        nums_s.split(" ").map{|s| s.to_i}.each do |num|
-          stuff << [q, num]
+        if nums_s.nil?
+          version=q.to_i
+        else
+          nums_s.split(" ").map{|s| s.to_i}.each do |num|
+            stuff << [q, num]
+          end
         end
       end
-      self.new stuff
+      self.new stuff, version
     end
   end
 
