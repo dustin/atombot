@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'trie'
 
 require 'atombot/query'
