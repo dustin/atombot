@@ -43,7 +43,8 @@ class ServiceHandler
 
   def service_for(svc, username, password)
     $logger.info "Getting a service for #{username}: #{svc.inspect}"
-    Twitter::Base.new username, password, svc.hostname, svc.api_path
+    h=svc.api_path.blank? ? svc.hostname : "#{svc.hostname}/#{svc.api_path}"
+    Twitter::Base.new username, password, :api_host => h
   end
 
   def with_registered_user_service(user, svcname)
