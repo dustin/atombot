@@ -103,6 +103,17 @@ class ServiceHandler
     error user, "Failed to post your message."
   end
 
+  def process_verify(user, stuff)
+      with_registered_user_service(user, stuff['service']) do |usvc, s|
+        s.verify_credentials
+        success user, "Credentials verified for #{stuff['service']}"
+      end
+    rescue Interrupt
+      error user, "Timed out waiting for response. Your post *may* have gone through."
+    rescue StandardError
+      error user, "Credential verification failed for #{stuff['service']}"
+    end
+
   def process
     job = @beanstalk.reserve
     stuff = job.ybody

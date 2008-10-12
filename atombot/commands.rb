@@ -339,6 +339,14 @@ EOF
       end
       alias_method :removeservice, :remove_service
 
+      cmd :verify_svcs, "Verify all service connections." do |user, nothing|
+        userv = Hash[* user.user_services.map{|us| [us.service.name, us]}.flatten]
+        userv.keys.each do |s|
+          service_msg('user' => user.id, 'type' => 'verify', 'service' => s)
+        end
+      end
+      alias_method :verifysvcs, :verify_svcs
+
       cmd :post, "Post an update to a service." do |user, arg|
         with_arg(user, arg, "What do you want to post?") do |msg|
           s = if /^!([A-z.]+)\s(.*)/.match msg
