@@ -35,7 +35,7 @@ get '/ispy/atom/:id' do
  <id>http://bleu.west.spy.net/ispy/atom/#{params[:id]}</id>
 EOF
   u = User.first(:id => params[:id].to_i)
-  u.messages(:created_at.gt => 'yesterday', :order => [:created_at.desc], :limit => 20).each do |m|
+  u.messages(:created_at.gt => 'yesterday', :order => [:created_at.desc], :limit => 50).each do |m|
     out << m.atom
   end
   out << "</feed>"
