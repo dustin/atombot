@@ -178,9 +178,8 @@ module AtomBot
         @roster.add_subscription_request_callback do |roster_item, presence|
           @roster.accept_subscription(presence.from)
           subscribe_to presence.from.bare.to_s
-          AtomBot::Config::CONF['admins'].each do |admin|
-            deliver admin, "Registered new user: #{presence.from.bare.to_s}"
-          end
+          msg="Registered new user: #{presence.from.bare.to_s} (#{User.count})"
+          AtomBot::Config::CONF['admins'].each { |admin| deliver admin, msg }
         end
 
         @client.add_presence_callback do |presence|
