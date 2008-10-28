@@ -141,6 +141,17 @@ module AtomBot
       @commands = Hash[*AtomBot::XMPPCommands.commands.map{|cn| c=cn.new; [c.node, c]}.flatten]
     end
 
+    def greet(jid)
+      msg=<<-EOF
+Welcome to IdentiSpy.
+
+Here you can use your normal IM client to post to identi.ca, twitter and other services and track topics in realtime across multiple services (except twitter because they suck).
+
+Type "help" to get started.
+EOF
+      deliver jid, msg
+    end
+
     def register_callbacks
 
       @client.on_exception do |e, stream, symbol|
@@ -180,6 +191,7 @@ module AtomBot
           subscribe_to presence.from.bare.to_s
           msg="Registered new user: #{presence.from.bare.to_s} (#{User.count})"
           AtomBot::Config::CONF['admins'].each { |admin| deliver admin, msg }
+          greet presence.from
         end
 
         @client.add_presence_callback do |presence|
