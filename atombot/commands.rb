@@ -354,7 +354,7 @@ EOF
             msg = $2
             $1
           else
-            user.default_service.name
+            user.default_service.nil? ? 'identica' : user.default_service.name
           end
           service_msg('user' => user.id, 'type' => 'post', 'service' => s, 'msg' => msg)
         end
