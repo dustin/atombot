@@ -31,11 +31,11 @@ module AtomBot
     end
 
     def format_html_users(text, svc)
-      text.gsub(/(\W*)(@[\w_]+)/) {|x| $1 + user_link($2, svc)}.gsub(/&/, '&amp;')
+      text.gsub(/(\W*)(@[\w_]+)/) {|x| $1 + user_link($2, svc)}
     end
 
     def format_html_tags(text, svc)
-      text.gsub(/(\W*)(#[^\s]+)/) {|x| $1 + tag_link($2, svc)}.gsub(/&/, '&amp;')
+      text.gsub(/(\W*)(#[^\s]+)/) {|x| $1 + tag_link($2, svc)}
     end
 
     def format_html_body(from, text, type, svc)
