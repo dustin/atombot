@@ -38,7 +38,6 @@ module AtomBot
     # for the queries on match hit
     def initialize(queries_and_targets, version=nil)
       @queries = Trie.new
-      @version = version.nil? ? CacheInterface.new.new_version_num : version
 
       queries_and_targets.each do |query, target|
         q = AtomBot::Query.new query
@@ -48,6 +47,8 @@ module AtomBot
           @queries.insert ws, value
         end
       end
+
+      @version = version.nil? ? CacheInterface.new.new_version_num : version
     end
 
     def matches(words)
