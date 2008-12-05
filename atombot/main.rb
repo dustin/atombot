@@ -160,6 +160,7 @@ EOF
           $logger.info e.backtrace.join("\n\t")
         end
         $stdout.flush
+        exit 1
       end
 
       @roster = Jabber::Roster::Helper.new(@client)
