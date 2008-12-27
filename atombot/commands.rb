@@ -54,7 +54,7 @@ module AtomBot
             </x></message>")
       end
 
-      def dispatch(cmd, user, arg)
+      def dispatch(cmd, user, arg, orig)
         # I have a bunch of these guys in error state beating up my bot.
         return if user.status == 'error'
         typing_notification user
@@ -62,7 +62,9 @@ module AtomBot
           self.send cmd.to_sym, user, arg
         else
           if user.auto_post
-            post user, "#{cmd} #{arg}"
+            post user, orig
+          elsif cmd[0] == ?@
+            post user, orig
           else
             AtomBot::Config::CONF['admins'].each do |a|
               deliver a, "[unknown command] #{user.jid}: #{cmd} #{arg}"
