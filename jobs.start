@@ -6,8 +6,8 @@
 exec > logs/jobs.log
 exec 2>&1
 
-ulimit -v 250000
-ulimit -m 250000
+ulimit -v 400000
+ulimit -m 400000
 
 while :
 do
