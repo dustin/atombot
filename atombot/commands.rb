@@ -89,7 +89,7 @@ module AtomBot
           out << ""
           out << cmds.keys.sort.map{|k| "#{k}\t#{cmds[k]}"}
           out << ""
-          out << "Online help is availble at http://www.microblog.org/wiki/IdentiSpy"
+          out << "Online help is available at http://www.microblog.org/wiki/IdentiSpy"
           out << "Email questions, suggestions or complaints to dustin@spy.net"
           send_msg user, out.join("\n")
         else
