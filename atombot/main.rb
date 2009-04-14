@@ -4,6 +4,7 @@ require 'xmpp4r/discovery'
 require 'xmpp4r/dataforms'
 require 'xmpp4r/command/iq/command'
 require 'xmpp4r/command/helper/responder'
+require 'xmpp4r/pubsub'
 require 'xmpp4r/version'
 
 require 'atombot/config'
@@ -40,6 +41,8 @@ module AtomBot
       @status=status
 
       register_callbacks
+
+      @pubsub_id = 1
 
       @num_users = 0
       @num_tracks = 0
@@ -110,12 +113,17 @@ module AtomBot
     def deliver_pubsub(id, source, entry)
       iq = Jabber::Iq.new :set, AtomBot::Config::PUBSUB_JID
       iq.from = AtomBot::Config::SCREEN_NAME
-      iq.id = new_id
+      iq.id = "pubsub-#{@pubsub_id}"
+      @pubsub_id = @pubsub_id + 1
 
       pubsub = Jabber::PubSub::IqPubSub.new
-      pub = Jabber::PubSub::Publish.new :node => AtomBot::Config::PUBSUB_PREFIX + source
-      pub << source
+      pub = Jabber::PubSub::Publish.new
+      pub.attributes['node'] = AtomBot::Config::PUBSUB_PREFIX + source
 
+      item = Jabber::PubSub::Item.new id
+      item.add_element entry
+
+      pub.add_element item
       pubsub.add_element pub
       iq.add_element pubsub
 
