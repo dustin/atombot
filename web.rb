@@ -16,8 +16,7 @@ beanstalk_in.use AtomBot::Config::CONF['incoming']['tube']
 
 # for pubsub
 beanstalk_out = Beanstalk::Pool.new [AtomBot::Config::CONF['outgoing']['beanstalkd']]
-beanstalk_out.watch AtomBot::Config::CONF['outgoing']['tube']
-beanstalk_out.ignore 'default'
+beanstalk_out.use AtomBot::Config::CONF['outgoing']['tube']
 
 def atom_date(d=DateTime.now)
   d.strftime "%Y-%m-%dT%H:%M:%SZ"

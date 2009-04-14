@@ -6,6 +6,7 @@ require 'xmpp4r/command/iq/command'
 require 'xmpp4r/command/helper/responder'
 require 'xmpp4r/pubsub'
 require 'xmpp4r/version'
+require 'rexml/document'
 
 require 'atombot/config'
 require 'atombot/models'
@@ -29,6 +30,7 @@ module AtomBot
       if AtomBot::Config::PUBSUB_JID
         @beanstalk_pubsub = Beanstalk::Pool.new [AtomBot::Config::CONF['outgoing']['beanstalkd']]
         @beanstalk_pubsub.watch AtomBot::Config::CONF['outgoing']['tube']
+        @beanstalk_pubsub.use AtomBot::Config::CONF['outgoing']['tube']
         @beanstalk_pubsub.ignore 'default'
       end
 
@@ -80,12 +82,14 @@ module AtomBot
 
     def process_outgoing(job)
       stuff = job.ybody
-      $logger.info "]]] #{stuff['to']}"
       if stuff['message']
+        $logger.info "]]] #{stuff['to']}"
         deliver stuff['to'], format_track_msg(stuff)
       elsif stuff['pubsub']
+        $logger.info "+++ pubsub #{stuff['source']}"
         deliver_pubsub stuff['id'], stuff['source'], stuff['atom']
       else
+        $logger.info "]]] #{stuff['to']}"
         deliver stuff['to'], stuff['msg']
       end
     end
@@ -132,7 +136,7 @@ module AtomBot
       pub.attributes['node'] = AtomBot::Config::PUBSUB_PREFIX + source
 
       item = Jabber::PubSub::Item.new id
-      item.add_element entry
+      item.add(REXML::Text.new(entry, false, nil, true, nil, %r/.^/))
 
       pub.add_element item
       pubsub.add_element pub
