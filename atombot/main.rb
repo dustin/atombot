@@ -77,6 +77,8 @@ module AtomBot
       $logger.info "]]] #{stuff['to']}"
       if stuff['message']
         deliver stuff['to'], format_track_msg(stuff)
+      elsif stuff['pubsub']
+        deliver_pubsub stuff['id'], stuff['source'], stuff['atom']
       else
         deliver stuff['to'], stuff['msg']
       end
@@ -104,7 +106,10 @@ module AtomBot
         })
 
       if AtomBot::Config::PUBSUB_JID
-        deliver_pubsub id, source, entry
+        @beanstalk_out.yput({'pubsub' => 1,
+                              'id' => id,
+                              'source' => source,
+                              'atom' => entry.to_s})
       end
     rescue StandardError, Interrupt
       $logger.info "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t") + "\n" + message.to_s

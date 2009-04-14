@@ -14,6 +14,11 @@ include REXML
 beanstalk_in = Beanstalk::Pool.new [AtomBot::Config::CONF['incoming']['beanstalkd']]
 beanstalk_in.use AtomBot::Config::CONF['incoming']['tube']
 
+# for pubsub
+beanstalk_out = Beanstalk::Pool.new [AtomBot::Config::CONF['outgoing']['beanstalkd']]
+beanstalk_out.watch AtomBot::Config::CONF['outgoing']['tube']
+beanstalk_out.ignore 'default'
+
 def atom_date(d=DateTime.now)
   d.strftime "%Y-%m-%dT%H:%M:%SZ"
 end
@@ -63,4 +68,9 @@ post '/submit/:apikey' do
     'id' => id,
     'atom' => entry.to_s
     })
+
+  beanstalk_out.yput({'pubsub' => 1,
+                       'id' => id,
+                       'source' => service.name,
+                       'atom' => entry.to_s})
 end
