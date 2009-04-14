@@ -258,7 +258,7 @@ EOF
       end
     end
 
-    def inner_loop      
+    def inner_loop
       loop do
         job = @beanstalk_out.reserve
         process_outgoing job
