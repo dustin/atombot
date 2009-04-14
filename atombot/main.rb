@@ -99,8 +99,27 @@ module AtomBot
         'id' => id,
         'atom' => entry.to_s
         })
+
+      if AtomBot::Config::PUBSUB_JID
+        deliver_pubsub id, source, entry
+      end
     rescue StandardError, Interrupt
       $logger.info "Error processing feeder message:  #{$!}" + $!.backtrace.join("\n\t") + "\n" + message.to_s
+    end
+
+    def deliver_pubsub(id, source, entry)
+      iq = Jabber::Iq.new :set, AtomBot::Config::PUBSUB_JID
+      iq.from = AtomBot::Config::SCREEN_NAME
+      iq.id = new_id
+
+      pubsub = Jabber::PubSub::IqPubSub.new
+      pub = Jabber::PubSub::Publish.new :node => AtomBot::Config::PUBSUB_PREFIX + source
+      pub << source
+
+      pubsub.add_element pub
+      iq.add_element pubsub
+
+      @client.send iq
     end
 
     def subscribe_to_unknown

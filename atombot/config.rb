@@ -12,6 +12,9 @@ module AtomBot
     SCREEN_NAME = CONF['incoming']['jid']
     IGNORED_JIDS = CONF['ignored'] || []
 
+    PUBSUB_JID = CONF['pubsub']['jid']
+    PUBSUB_PREFIX = CONF['pubsub']['prefix']
+
     DataMapper.setup(:default, CONF['general']['db'])
   end
 end
