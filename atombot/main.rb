@@ -26,6 +26,12 @@ module AtomBot
       @beanstalk_out.watch AtomBot::Config::CONF['outgoing']['tube']
       @beanstalk_out.ignore 'default'
 
+      if AtomBot::Config::PUBSUB_JID
+        @beanstalk_pubsub = Beanstalk::Pool.new [AtomBot::Config::CONF['outgoing']['beanstalkd']]
+        @beanstalk_pubsub.watch AtomBot::Config::CONF['outgoing']['tube']
+        @beanstalk_pubsub.ignore 'default'
+      end
+
       @beanstalk_in = Beanstalk::Pool.new [AtomBot::Config::CONF['incoming']['beanstalkd']]
       @beanstalk_in.use AtomBot::Config::CONF['incoming']['tube']
 
@@ -106,7 +112,7 @@ module AtomBot
         })
 
       if AtomBot::Config::PUBSUB_JID
-        @beanstalk_out.yput({'pubsub' => 1,
+        @beanstalk_pubsub.yput({'pubsub' => 1,
                               'id' => id,
                               'source' => source,
                               'atom' => entry.to_s})
