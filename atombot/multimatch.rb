@@ -14,9 +14,12 @@ module AtomBot
     def self.load_all
       user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
       away_users = Set.new(User.all(:active => false).map{|u| u.id})
-      AtomBot::MultiMatch.new(Track.all.reject do |t|
-            away_users.include?(t.user_id)
-          end.map { |t| [t.query + " " + user_negs[t.user_id], t.user_id]})
+      am = AtomBot.MultiMatch.new
+      Track.all.reject { |t| away_users.include?(t.user_id) }.each do |t|
+        am.add_query_and_target(t.query + " " + user_negs[t.user_id], t.user_id)
+      end
+      am.new_version
+      am
     end
 
     def self.all
@@ -36,18 +39,22 @@ module AtomBot
 
     # Receives a list of pairs [query, something] and returns the somethings
     # for the queries on match hit
-    def initialize(queries_and_targets, version=nil)
+    def initialize(queries_and_targets=nil, version=nil)
       @queries = Trie.new
 
-      queries_and_targets.each do |query, target|
-        q = AtomBot::Query.new query
-        value = [q, target]
-        q.positive.each do |word|
-          ws = word.to_s
-          @queries.insert ws, value
-        end
+      if queries_and_targets
+        queries_and_targets.each { |query, target| add_query_and_target query, target }
+        new_version
       end
+    end
 
+    def add_query_and_target(query, target)
+      q = AtomBot::Query.new query
+      value = [q, target]
+      q.positive.each { |word| @queries.insert word.to_s, value }
+    end
+
+    def new_version
       @version = version.nil? ? CacheInterface.new.new_version_num : version
     end
 
