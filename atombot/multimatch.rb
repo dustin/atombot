@@ -13,11 +13,14 @@ module AtomBot
 
     def self.load_all
       user_negs = Hash[* User.all.map{|u| [u.id, u.user_global_filters_as_s]}.flatten]
+      $logger.info "Loaded #{user_negs.size} user negs."
       away_users = Set.new(User.all(:active => false).map{|u| u.id})
-      am = AtomBot.MultiMatch.new
+      $logger.info "Loaded #{away_users.size} away users."
+      am = AtomBot::MultiMatch.new
       Track.all.reject { |t| away_users.include?(t.user_id) }.each do |t|
         am.add_query_and_target(t.query + " " + user_negs[t.user_id], t.user_id)
       end
+      $logger.info "Loaded #{am.size} multimatches"
       am.new_version
       am
     end
