@@ -97,11 +97,11 @@ module AtomBot
     def process_feeder_message(message)
       source = @services[message.from.bare.to_s].name
       entry = message.first_element('entry')
-      message = HTMLEntities.new.decode(entry.first_element_text('summary'))
+      message = HTMLEntities.new.decode(entry.first_element_text('title'))
       id = entry.first_element_text('id')
 
-      author = entry.first_element('source').first_element('author').first_element_text('name')
-      authorlink = entry.first_element('source').first_element_text('link')
+      author = entry.first_element('author').first_element_text('name')
+      authorlink = entry.first_element('author').first_element_text('uri')
 
       # Strip off the author's name from the message
       message.gsub!(Regexp.new("^#{author}: "), '')
